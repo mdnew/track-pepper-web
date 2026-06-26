@@ -5,8 +5,10 @@ import { AppHeader } from '../components/ui'
 import { MonthCalendar } from '../components/MonthCalendar'
 import { useAuth } from '../context/AuthContext'
 import { authService } from '../services/auth'
+import { petsService } from '../services/pets'
 import { scheduleService } from '../services/schedule'
 import type { ScheduleTask } from '../types'
+import { formatPetsLine } from '../utils/petAge'
 import './CalendarPage.css'
 
 export function CalendarPage() {
@@ -18,23 +20,26 @@ export function CalendarPage() {
     new Map(),
   )
   const [householdName, setHouseholdName] = useState<string | null>(null)
+  const [petsLine, setPetsLine] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   const loadData = useCallback(async () => {
     if (!profile?.householdId) return
     setLoading(true)
     try {
-      const [nextTasks, counts, household] = await Promise.all([
+      const [nextTasks, counts, household, pets] = await Promise.all([
         scheduleService.getTasks(),
         scheduleService.getCompletionCountsForMonth(
           profile.householdId,
           focusedMonth,
         ),
         authService.getHousehold(),
+        petsService.getPets(),
       ])
       setTasks(nextTasks)
       setCompletionCounts(counts)
       setHouseholdName(household?.name ?? null)
+      setPetsLine(formatPetsLine(pets))
     } finally {
       setLoading(false)
     }
@@ -66,7 +71,10 @@ export function CalendarPage() {
           </span>
           <div>
             <h2>{householdName ?? 'Daily Schedule'}</h2>
-            <p>8–12 weeks • Wakeup 5:30 AM • Bedtime 9:30 PM</p>
+            <p>
+              {petsLine ??
+                '8–12 weeks • Wakeup 5:30 AM • Bedtime 9:30 PM'}
+            </p>
             {profile?.displayName && (
               <p className="signed-in">Signed in as {profile.displayName}</p>
             )}

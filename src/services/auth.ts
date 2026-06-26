@@ -95,6 +95,21 @@ export const authService = {
     if (error) throw error
   },
 
+  async updateHouseholdName(name: string) {
+    const trimmed = name.trim()
+    if (!trimmed) throw new Error('Household name is required.')
+
+    const profile = await this.getProfile()
+    if (!profile?.householdId) throw new Error('Not in a household')
+
+    const client = requireClient()
+    const { error } = await client
+      .from('households')
+      .update({ name: trimmed })
+      .eq('id', profile.householdId)
+    if (error) throw error
+  },
+
   async updatePassword(newPassword: string) {
     const client = requireClient()
     const { error } = await client.auth.updateUser({ password: newPassword })

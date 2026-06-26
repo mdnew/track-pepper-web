@@ -48,6 +48,15 @@
   font-size: 15px;
 }
 
+.settings-card form + .read-only-label,
+.settings-card form + .read-only-label + .read-only-value {
+  margin-top: 0;
+}
+
+.settings-card form:not(:last-child) {
+  margin-bottom: 16px;
+}
+
 .read-only-label {
   margin: 0;
   font-size: 12px;
@@ -59,10 +68,117 @@
   font-size: 15px;
 }
 
-.household-name {
+.settings-loading.inline {
+  padding: 24px;
+}
+
+.settings-help {
   margin: 0 0 16px;
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.settings-empty {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.pets-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pet-card {
+  padding: 14px;
+  border: 1px solid rgb(201 168 124 / 35%);
+  border-radius: 14px;
+  background: #fffaf5;
+}
+
+.pet-card-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pet-card-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pet-card-fields input {
+  padding: 12px 14px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.pet-age {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--potty);
+}
+
+.pet-card-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.pet-card-actions .btn-primary {
+  margin-top: 0;
+  width: auto;
+  padding-inline: 18px;
+}
+
+.btn-text-danger {
+  background: none;
+  border: none;
+  color: var(--train);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.add-pet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgb(201 168 124 / 25%);
+}
+
+.add-pet-form h3 {
+  margin: 8px 0 0;
+  font-size: 15px;
+}
+
+.add-pet-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.add-pet-form input {
+  padding: 12px 14px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 15px;
 }
 
 .members-list {

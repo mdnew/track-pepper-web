@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ErrorBanner } from '../components/ui'
+import { PetsSection } from '../components/PetsSection'
 import { authService } from '../services/auth'
 import { useAuth } from '../context/AuthContext'
 import type { Household, Profile } from '../types'
@@ -11,12 +12,14 @@ export function SettingsPage() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
   const [displayName, setDisplayName] = useState('')
+  const [householdName, setHouseholdName] = useState('')
   const [household, setHousehold] = useState<Household | null>(null)
   const [members, setMembers] = useState<Profile[]>([])
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(true)
   const [savingName, setSavingName] = useState(false)
+  const [savingHouseholdName, setSavingHouseholdName] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
@@ -32,6 +35,7 @@ export function SettingsPage() {
       setHousehold(h)
       setMembers(m)
       setDisplayName(p?.displayName ?? '')
+      setHouseholdName(h?.name ?? '')
     } finally {
       setLoading(false)
     }
@@ -54,6 +58,26 @@ export function SettingsPage() {
       setError(err instanceof Error ? err.message : String(err))
     } finally {
       setSavingName(false)
+    }
+  }
+
+  async function saveHouseholdName(e: React.FormEvent) {
+    e.preventDefault()
+    if (!householdName.trim()) {
+      setError('Household name is required.')
+      return
+    }
+    setSavingHouseholdName(true)
+    setError(null)
+    setMessage(null)
+    try {
+      await authService.updateHouseholdName(householdName)
+      await load()
+      setMessage('Household name updated.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setSavingHouseholdName(false)
     }
   }
 
@@ -158,13 +182,35 @@ export function SettingsPage() {
             {household && (
               <section className="settings-card">
                 <h2>Household</h2>
-                <p className="household-name">{household.name}</p>
+                <form onSubmit={saveHouseholdName}>
+                  <label>
+                    Household name
+                    <input
+                      value={householdName}
+                      onChange={(e) => setHouseholdName(e.target.value)}
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={savingHouseholdName}
+                  >
+                    {savingHouseholdName ? 'Saving…' : 'Save household name'}
+                  </button>
+                </form>
                 <p className="read-only-label">Invite code</p>
                 <div className="invite-box">{household.inviteCode}</div>
                 <button type="button" className="btn-outline" onClick={copyInvite}>
                   Copy invite code
                 </button>
               </section>
+            )}
+
+            {household && (
+              <PetsSection
+                onMessage={setMessage}
+                onError={(value) => setError(value || null)}
+              />
             )}
 
             <section className="settings-card">

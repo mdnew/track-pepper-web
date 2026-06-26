@@ -10,6 +10,13 @@ export interface Profile {
   householdId: string | null
 }
 
+export interface Pet {
+  id: string
+  householdId: string
+  name: string
+  dateOfBirth: Date
+}
+
 export interface ScheduleTask {
   id: string
   sortOrder: number
