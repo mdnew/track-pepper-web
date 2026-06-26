@@ -1,0 +1,124 @@
+.onboarding-page {
+  padding: 24px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.onboarding-page.center {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.onboarding-intro {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.segmented button {
+  padding: 12px;
+  border: 1px solid var(--header);
+  border-radius: 12px;
+  background: white;
+  color: var(--header);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmented button.active {
+  background: var(--header);
+  color: white;
+}
+
+.onboarding-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.onboarding-form p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.onboarding-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.onboarding-form input {
+  padding: 14px 16px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.invite-box {
+  padding: 20px;
+  background: var(--feed-bg);
+  border: 1px solid var(--feed);
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin: 12px 0;
+}
+
+.btn-outline {
+  padding: 12px 20px;
+  background: white;
+  border: 1px solid var(--header);
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--header);
+}
+
+.btn-primary {
+  padding: 14px;
+  background: var(--header);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.auth-emoji {
+  font-size: 48px;
+  display: block;
+  text-align: center;
+}
+
+.text-button {
+  background: none;
+  border: none;
+  color: rgb(255 255 255 / 70%);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.page-with-header {
+  min-height: 100vh;
+  background: var(--background);
+}

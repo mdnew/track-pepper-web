@@ -1,0 +1,38 @@
+.completion-indicator {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.completion-indicator.empty {
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 50%;
+}
+
+.completion-indicator.done {
+  background: var(--potty);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.completion-indicator.partial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.completion-ring {
+  position: absolute;
+  inset: 0;
+}
+
+.completion-count {
+  position: relative;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-primary);
+}

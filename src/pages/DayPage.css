@@ -1,0 +1,98 @@
+.day-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.day-layout .app-header {
+  flex-shrink: 0;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.header-spacer {
+  width: 36px;
+}
+
+.progress-banner {
+  flex-shrink: 0;
+  margin: 8px 16px 0;
+  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgb(44 26 14 / 6%);
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.progress-count {
+  color: var(--potty);
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--potty-bg);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--potty);
+  border-radius: 6px;
+  transition: width 0.2s ease;
+}
+
+.day-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 16px 24px;
+}
+
+.day-tasks {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.day-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tip-box {
+  max-width: 640px;
+  margin: 16px auto 0;
+  padding: 16px;
+  background: var(--feed-bg);
+  border: 1px solid var(--feed);
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #5c3a10;
+}
+
+.tip-box strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.tip-box p {
+  margin: 0;
+}

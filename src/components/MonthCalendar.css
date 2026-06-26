@@ -1,0 +1,82 @@
+.month-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.month-calendar-header h2 {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.month-nav {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--header);
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.month-nav:hover {
+  background: var(--feed-bg);
+}
+
+.month-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.month-weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.month-day {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 2px;
+  min-height: 68px;
+  border-radius: 12px;
+}
+
+.month-day:hover {
+  background: rgb(255 255 255 / 60%);
+}
+
+.month-day-number {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  border-radius: 50%;
+}
+
+.month-day-number.today {
+  font-weight: 800;
+  background: rgb(107 140 255 / 35%);
+  border: 2px solid var(--sleep);
+}

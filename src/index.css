@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --background: #fff8f0;
+  --card: #ffffff;
+  --header: #3d2c1e;
+  --header-subtitle: #c9a87c;
+  --text-primary: #2c1a0e;
+  --text-secondary: #7a5c3c;
+  --divider: #c9a87c;
+  --potty: #52b77a;
+  --feed: #f5a623;
+  --sleep: #6b8cff;
+  --play: #c06bf5;
+  --train: #f56b6b;
+  --wind: #999999;
+  --night: #1e1a2e;
+  --potty-bg: #f0faf3;
+  --feed-bg: #fff5e6;
+  --sleep-bg: #f0f4ff;
+  --play-bg: #fef6ff;
+  --train-bg: #fff0f0;
+  --wind-bg: #f5f5f5;
+  --night-bg: #1e1a2e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: 'Lato', system-ui, sans-serif;
+  color: var(--text-primary);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+button {
+  font-family: 'Nunito', sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}

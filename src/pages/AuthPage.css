@@ -1,0 +1,164 @@
+.auth-page {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-container {
+  width: min(100%, 420px);
+  padding-top: 32px;
+}
+
+.auth-emoji {
+  display: block;
+  text-align: center;
+  font-size: 48px;
+}
+
+.auth-container h1 {
+  text-align: center;
+  margin: 12px 0 4px;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.auth-subtitle {
+  text-align: center;
+  margin: 0 0 32px;
+  color: var(--header-subtitle);
+  font-size: 14px;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 2px solid var(--divider);
+  margin-bottom: 24px;
+}
+
+.auth-tabs button {
+  background: none;
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.auth-tabs button.active {
+  color: var(--header);
+  border-bottom-color: var(--header);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.auth-form input {
+  padding: 14px 16px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 15px;
+  background: white;
+}
+
+.auth-forgot {
+  text-align: right;
+}
+
+.auth-forgot a {
+  color: var(--header);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.auth-forgot a:hover {
+  text-decoration: underline;
+}
+
+.btn-primary {
+  margin-top: 8px;
+  padding: 14px;
+  background: var(--header);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 8px 0 0;
+}
+
+.paste-section {
+  margin-top: 32px;
+}
+
+.paste-section hr {
+  border: none;
+  border-top: 1px solid var(--divider);
+  margin: 0 0 20px;
+}
+
+.paste-section h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.paste-section textarea {
+  padding: 12px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.reset-title {
+  text-align: center;
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.link-button {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 24px;
+  color: white;
+}
+
+.btn-outline {
+  padding: 12px 20px;
+  background: white;
+  border: 1px solid var(--header);
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--header);
+  width: 100%;
+}
