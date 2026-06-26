@@ -1,26 +1,5 @@
-.page-with-header.day-layout {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: unset;
-  height: 100dvh;
-  overflow: hidden;
-  overscroll-behavior: none;
-  background: var(--background);
-}
-
 .day-layout-top {
   flex-shrink: 0;
-}
-
-.day-layout .app-header {
-  flex-shrink: 0;
-  z-index: 10;
-  padding-top: max(12px, env(safe-area-inset-top));
-  padding-right: max(20px, env(safe-area-inset-right));
-  padding-bottom: 16px;
-  padding-left: max(20px, env(safe-area-inset-left));
 }
 
 .back-button {
@@ -79,12 +58,6 @@
 }
 
 .day-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
   padding: 8px max(16px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom))
     max(16px, env(safe-area-inset-left));
 }

@@ -199,7 +199,7 @@ export function DayPage() {
   }
 
   return (
-    <div className="page-with-header day-layout">
+    <div className="page-with-header fixed-page-layout day-layout">
       <div className="day-layout-top">
         <header className="app-header">
           <button type="button" className="back-button" onClick={() => navigate('/')}>
@@ -236,7 +236,7 @@ export function DayPage() {
           <div className="spinner" />
         </div>
       ) : (
-        <div className="day-scroll" ref={scrollRef}>
+        <div className="day-scroll fixed-page-scroll" ref={scrollRef}>
           <div className="day-tasks">{taskElements}</div>
           <div className="tip-box">
             <strong>🐾 Quick Reminders</strong>

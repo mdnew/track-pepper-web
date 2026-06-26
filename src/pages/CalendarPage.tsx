@@ -44,14 +44,22 @@ export function CalendarPage() {
     loadData()
   }, [loadData])
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
   return (
-    <div className="page-with-header">
+    <div className="page-with-header fixed-page-layout">
       <AppHeader
         title="TrackPepper"
         onSettings={() => navigate('/settings')}
       />
 
-      <main className="calendar-page">
+      <main className="calendar-page fixed-page-scroll">
         <div className="header-card">
           <span className="header-emoji" aria-hidden>
             🐶
