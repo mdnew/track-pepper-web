@@ -2,7 +2,7 @@
 
 React web app sharing the same Supabase backend as the iOS app.
 
-**Repo:** [github.com/mdnew/pepper-track-web](https://github.com/mdnew/pepper-track-web)
+**Repo:** [github.com/mdnew/track-pepper-web](https://github.com/mdnew/track-pepper-web)
 
 ## Features
 
