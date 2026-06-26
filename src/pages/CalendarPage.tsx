@@ -43,62 +43,34 @@ export function CalendarPage() {
         authService.getHousehold(),
       ])
 
-      const petId = resolveSelectedPetId(nextPets)
+      const petId = selectedPetId ?? resolveSelectedPetId(nextPets)
       const pet = nextPets.find((item) => item.id === petId) ?? null
-      const activePlan = pet ? resolvePlanForPet(nextPlans, pet) : null
+      const schedule = pet
+        ? await scheduleService.getScheduleForPet(pet, nextPlans, new Date())
+        : { plan: null, tasks: [] }
 
-      const [tasks, counts] = petId
-        ? await Promise.all([
-            activePlan
-              ? scheduleService.getTasksForPlan(activePlan.id)
-              : Promise.resolve([]),
-            scheduleService.getCompletionCountsForMonth(
-              profile.householdId,
-              petId,
-              focusedMonth,
-            ),
-          ])
-        : [[], new Map<string, number>()]
+      const counts = petId
+        ? await scheduleService.getCompletionCountsForMonth(
+            profile.householdId,
+            petId,
+            focusedMonth,
+          )
+        : new Map<string, number>()
 
       setPets(nextPets)
       setPlans(nextPlans)
       setSelectedPetId(petId)
-      setTaskCount(tasks.length)
+      setTaskCount(schedule.tasks.length)
       setCompletionCounts(counts)
       setHouseholdName(household?.name ?? null)
     } finally {
       setLoading(false)
     }
-  }, [profile?.householdId, focusedMonth])
+  }, [profile?.householdId, focusedMonth, selectedPetId])
 
   useEffect(() => {
     loadData()
   }, [loadData])
-
-  useEffect(() => {
-    if (!profile?.householdId || !selectedPetId || plans.length === 0) return
-
-    const pet = pets.find((item) => item.id === selectedPetId)
-    if (!pet) return
-
-    async function refreshForPet() {
-      const activePlan = resolvePlanForPet(plans, pet!)
-      const [tasks, counts] = await Promise.all([
-        activePlan
-          ? scheduleService.getTasksForPlan(activePlan.id)
-          : Promise.resolve([]),
-        scheduleService.getCompletionCountsForMonth(
-          profile!.householdId!,
-          selectedPetId!,
-          focusedMonth,
-        ),
-      ])
-      setTaskCount(tasks.length)
-      setCompletionCounts(counts)
-    }
-
-    refreshForPet().catch(() => undefined)
-  }, [selectedPetId, focusedMonth, profile?.householdId, pets, plans])
 
   useEffect(() => {
     applySpeciesTheme(theme)

@@ -16,7 +16,6 @@ import { applySpeciesTheme, speciesTheme } from '../theme/speciesTheme'
 import { isSameCalendarDay, parseDateKey, formatDateKey } from '../utils/formatDate'
 import { trackTaskComplete } from '../utils/analytics'
 import { resolveSelectedPetId, writeSelectedPetId } from '../utils/petSelection'
-import { resolvePlanForPet } from '../utils/schedulePlan'
 import {
   currentTimeInsertIndex,
   sortTasksChronologically,
@@ -42,6 +41,7 @@ export function DayPage() {
   const nowLineRef = useRef<HTMLDivElement>(null)
   const anchorRef = useRef<HTMLDivElement>(null)
   const hasScrolledRef = useRef(false)
+  const loadGenerationRef = useRef(0)
 
   const selectedPet = pets.find((pet) => pet.id === selectedPetId) ?? null
   const theme = speciesTheme(selectedPet?.species ?? 'dog')
@@ -77,32 +77,35 @@ export function DayPage() {
 
     let channel: ReturnType<typeof scheduleService.subscribeToCompletions> | null =
       null
+    const loadGeneration = ++loadGenerationRef.current
+    const petQuery = searchParams.get('pet')
 
     async function load() {
       if (!dateParam) return
       setLoading(true)
+      setTasks([])
+      setPlan(null)
       try {
         const day = parseDateKey(dateParam)
         const [nextPets, nextPlans] = await Promise.all([
           petsService.getPets(),
           scheduleService.getPlans(),
         ])
+        if (loadGeneration !== loadGenerationRef.current) return
+
         setPets(nextPets)
 
-        const petId = resolveSelectedPetId(
-          nextPets,
-          searchParams.get('pet'),
-        )
+        const petId = resolveSelectedPetId(nextPets, petQuery)
         setSelectedPetId(petId)
 
         const pet = nextPets.find((item) => item.id === petId) ?? null
-        const nextPlan = pet ? resolvePlanForPet(nextPlans, pet, day) : null
-        setPlan(nextPlan)
+        const schedule = pet
+          ? await scheduleService.getScheduleForPet(pet, nextPlans, day)
+          : { plan: null, tasks: [] as ScheduleTask[] }
+        if (loadGeneration !== loadGenerationRef.current) return
 
-        const nextTasks = nextPlan
-          ? await scheduleService.getTasksForPlan(nextPlan.id)
-          : []
-        setTasks(sortTasksChronologically(nextTasks))
+        setPlan(schedule.plan)
+        setTasks(sortTasksChronologically(schedule.tasks))
 
         if (petId) {
           const rows = await scheduleService.getCompletionsForDate(
@@ -110,6 +113,7 @@ export function DayPage() {
             petId,
             day,
           )
+          if (loadGeneration !== loadGenerationRef.current) return
           setCompletions(Object.fromEntries(rows.map((c) => [c.taskId, c])))
           channel = scheduleService.subscribeToCompletions(
             profile!.householdId!,
@@ -123,7 +127,9 @@ export function DayPage() {
           setCompletions({})
         }
       } finally {
-        setLoading(false)
+        if (loadGeneration === loadGenerationRef.current) {
+          setLoading(false)
+        }
       }
     }
 
@@ -132,7 +138,7 @@ export function DayPage() {
     return () => {
       channel?.unsubscribe()
     }
-  }, [profile?.householdId, dateParam, searchParams, loadCompletions])
+  }, [profile?.householdId, dateParam, searchParams.get('pet'), loadCompletions])
 
   useEffect(() => {
     if (!isToday || loading || hasScrolledRef.current || !scrollRef.current) {

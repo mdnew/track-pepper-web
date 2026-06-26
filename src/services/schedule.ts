@@ -1,7 +1,8 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
-import type { Completion, SchedulePlan, ScheduleTask } from '../types'
+import type { Completion, Pet, SchedulePlan, ScheduleTask } from '../types'
 import { formatDateKey, normalizeDate } from '../utils/formatDate'
+import { resolvePlanForPet } from '../utils/schedulePlan'
 import { supabase } from '../lib/supabase'
 
 function requireClient() {
@@ -68,6 +69,8 @@ export const scheduleService = {
   },
 
   async getTasksForPlan(planId: string): Promise<ScheduleTask[]> {
+    if (!planId.trim()) return []
+
     const client = requireClient()
     const { data, error } = await client
       .from('schedule_tasks')
@@ -76,7 +79,23 @@ export const scheduleService = {
       .order('sort_order', { ascending: true })
 
     if (error) throw error
-    return (data ?? []).map(mapTask)
+    return (data ?? [])
+      .map(mapTask)
+      .filter((task) => task.planId === planId)
+  },
+
+  async getScheduleForPet(
+    pet: Pet,
+    plans: SchedulePlan[],
+    referenceDate: Date,
+  ): Promise<{ plan: SchedulePlan | null; tasks: ScheduleTask[] }> {
+    const plan = resolvePlanForPet(plans, pet, referenceDate)
+    if (!plan) {
+      return { plan: null, tasks: [] }
+    }
+
+    const tasks = await this.getTasksForPlan(plan.id)
+    return { plan, tasks }
   },
 
   async getCompletionsForDate(
