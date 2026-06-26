@@ -8,6 +8,10 @@ export function formatDateOfBirth(date: Date): string {
   return formatDateKey(date)
 }
 
+export function petSpeciesEmoji(species: 'dog' | 'cat'): string {
+  return species === 'cat' ? '🐱' : '🐶'
+}
+
 export function formatPetAge(dateOfBirth: Date, now = new Date()): string {
   const dob = normalizeDate(dateOfBirth)
   const today = normalizeDate(now)
@@ -38,12 +42,16 @@ export function formatPetAge(dateOfBirth: Date, now = new Date()): string {
   return `${years}y ${months}mo old`
 }
 
-export function formatPetSummary(pet: { name: string; dateOfBirth: Date }): string {
-  return `${pet.name} · ${formatPetAge(pet.dateOfBirth)}`
+export function formatPetSummary(pet: {
+  name: string
+  dateOfBirth: Date
+  species: 'dog' | 'cat'
+}): string {
+  return `${petSpeciesEmoji(pet.species)} ${pet.name} · ${formatPetAge(pet.dateOfBirth)}`
 }
 
 export function formatPetsLine(
-  pets: { name: string; dateOfBirth: Date }[],
+  pets: { name: string; dateOfBirth: Date; species: 'dog' | 'cat' }[],
 ): string | null {
   if (pets.length === 0) return null
   return pets.map(formatPetSummary).join(' · ')

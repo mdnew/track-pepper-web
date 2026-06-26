@@ -15,10 +15,27 @@ export interface Pet {
   householdId: string
   name: string
   dateOfBirth: Date
+  species: PetSpecies
+}
+
+export type PetSpecies = 'dog' | 'cat'
+
+export interface SchedulePlan {
+  id: string
+  species: PetSpecies
+  name: string
+  emoji: string
+  introTitle: string | null
+  introDescription: string | null
+  tipsTitle: string | null
+  tipsBody: string | null
+  minAgeDays: number
+  maxAgeDays: number | null
 }
 
 export interface ScheduleTask {
   id: string
+  planId: string
   sortOrder: number
   timeLabel: string
   category: string
@@ -31,6 +48,7 @@ export interface ScheduleTask {
 export interface Completion {
   id: string
   householdId: string
+  petId: string
   taskId: string
   date: Date
   completedBy: string
@@ -46,3 +64,7 @@ export type TaskCategory =
   | 'train'
   | 'wind'
   | 'night'
+  | 'groom'
+  | 'vet'
+  | 'enrich'
+  | 'note'

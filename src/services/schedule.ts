@@ -1,6 +1,6 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
-import type { Completion, ScheduleTask } from '../types'
+import type { Completion, SchedulePlan, ScheduleTask } from '../types'
 import { formatDateKey, normalizeDate } from '../utils/formatDate'
 import { supabase } from '../lib/supabase'
 
@@ -9,9 +9,25 @@ function requireClient() {
   return supabase
 }
 
+function mapPlan(row: Record<string, unknown>): SchedulePlan {
+  return {
+    id: row.id as string,
+    species: row.species as SchedulePlan['species'],
+    name: row.name as string,
+    emoji: row.emoji as string,
+    introTitle: (row.intro_title as string | null) ?? null,
+    introDescription: (row.intro_description as string | null) ?? null,
+    tipsTitle: (row.tips_title as string | null) ?? null,
+    tipsBody: (row.tips_body as string | null) ?? null,
+    minAgeDays: row.min_age_days as number,
+    maxAgeDays: (row.max_age_days as number | null) ?? null,
+  }
+}
+
 function mapTask(row: Record<string, unknown>): ScheduleTask {
   return {
     id: row.id as string,
+    planId: row.plan_id as string,
     sortOrder: row.sort_order as number,
     timeLabel: row.time_label as string,
     category: row.category as string,
@@ -29,6 +45,7 @@ function mapCompletion(
   return {
     id: row.id as string,
     householdId: row.household_id as string,
+    petId: row.pet_id as string,
     taskId: row.task_id as string,
     date: new Date(`${row.date as string}T00:00:00`),
     completedBy: row.completed_by as string,
@@ -38,11 +55,24 @@ function mapCompletion(
 }
 
 export const scheduleService = {
-  async getTasks(): Promise<ScheduleTask[]> {
+  async getPlans(): Promise<SchedulePlan[]> {
+    const client = requireClient()
+    const { data, error } = await client
+      .from('schedule_plans')
+      .select()
+      .order('species')
+      .order('min_age_days')
+
+    if (error) throw error
+    return (data ?? []).map(mapPlan)
+  },
+
+  async getTasksForPlan(planId: string): Promise<ScheduleTask[]> {
     const client = requireClient()
     const { data, error } = await client
       .from('schedule_tasks')
       .select()
+      .eq('plan_id', planId)
       .order('sort_order', { ascending: true })
 
     if (error) throw error
@@ -51,6 +81,7 @@ export const scheduleService = {
 
   async getCompletionsForDate(
     householdId: string,
+    petId: string,
     date: Date,
   ): Promise<Completion[]> {
     const client = requireClient()
@@ -58,6 +89,7 @@ export const scheduleService = {
       .from('completions')
       .select('*, profiles!completed_by(display_name)')
       .eq('household_id', householdId)
+      .eq('pet_id', petId)
       .eq('date', formatDateKey(date))
 
     if (error) throw error
@@ -72,6 +104,7 @@ export const scheduleService = {
 
   async getCompletionCountsForMonth(
     householdId: string,
+    petId: string,
     month: Date,
   ): Promise<Map<string, number>> {
     const client = requireClient()
@@ -82,6 +115,7 @@ export const scheduleService = {
       .from('completions')
       .select('date')
       .eq('household_id', householdId)
+      .eq('pet_id', petId)
       .gte('date', formatDateKey(start))
       .lte('date', formatDateKey(end))
 
@@ -98,27 +132,38 @@ export const scheduleService = {
 
   async completeTask(
     householdId: string,
+    petId: string,
     taskId: string,
     date: Date,
     userId: string,
   ) {
     const client = requireClient()
-    const { error } = await client.from('completions').upsert({
-      household_id: householdId,
-      task_id: taskId,
-      date: formatDateKey(date),
-      completed_by: userId,
-      completed_at: new Date().toISOString(),
-    })
+    const { error } = await client.from('completions').upsert(
+      {
+        household_id: householdId,
+        pet_id: petId,
+        task_id: taskId,
+        date: formatDateKey(date),
+        completed_by: userId,
+        completed_at: new Date().toISOString(),
+      },
+      { onConflict: 'pet_id,task_id,date' },
+    )
     if (error) throw error
   },
 
-  async uncompleteTask(householdId: string, taskId: string, date: Date) {
+  async uncompleteTask(
+    householdId: string,
+    petId: string,
+    taskId: string,
+    date: Date,
+  ) {
     const client = requireClient()
     const { error } = await client
       .from('completions')
       .delete()
       .eq('household_id', householdId)
+      .eq('pet_id', petId)
       .eq('task_id', taskId)
       .eq('date', formatDateKey(date))
     if (error) throw error
@@ -126,12 +171,13 @@ export const scheduleService = {
 
   subscribeToCompletions(
     householdId: string,
+    petId: string,
     date: Date,
     onChange: () => void,
   ): RealtimeChannel {
     const client = requireClient()
     const channel = client
-      .channel(`completions-${formatDateKey(date)}`)
+      .channel(`completions-${petId}-${formatDateKey(date)}`)
       .on(
         'postgres_changes',
         {

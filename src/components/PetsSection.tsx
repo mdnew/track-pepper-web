@@ -1,15 +1,46 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { petsService } from '../services/pets'
-import type { Pet } from '../types'
+import type { Pet, PetSpecies } from '../types'
 import { formatDateOfBirth, formatPetAge } from '../utils/petAge'
 
 type PetDraft = {
   name: string
   dateOfBirth: string
+  species: PetSpecies
 }
 
-const emptyDraft = (): PetDraft => ({ name: '', dateOfBirth: '' })
+const emptyDraft = (): PetDraft => ({ name: '', dateOfBirth: '', species: 'dog' })
+
+function SpeciesPicker({
+  value,
+  onChange,
+}: {
+  value: PetSpecies
+  onChange: (species: PetSpecies) => void
+}) {
+  return (
+    <div className="species-picker">
+      <span className="species-picker-label">Type</span>
+      <div className="species-picker-options">
+        <button
+          type="button"
+          className={value === 'dog' ? 'active' : ''}
+          onClick={() => onChange('dog')}
+        >
+          🐶 Dog
+        </button>
+        <button
+          type="button"
+          className={value === 'cat' ? 'active' : ''}
+          onClick={() => onChange('cat')}
+        >
+          🐱 Cat
+        </button>
+      </div>
+    </div>
+  )
+}
 
 export function PetsSection({
   onMessage,
@@ -35,7 +66,11 @@ export function PetsSection({
         Object.fromEntries(
           nextPets.map((pet) => [
             pet.id,
-            { name: pet.name, dateOfBirth: formatDateOfBirth(pet.dateOfBirth) },
+            {
+              name: pet.name,
+              dateOfBirth: formatDateOfBirth(pet.dateOfBirth),
+              species: pet.species,
+            },
           ]),
         ),
       )
@@ -65,7 +100,12 @@ export function PetsSection({
     setSavingId(id)
     onError('')
     try {
-      await petsService.updatePet(id, draft.name, draft.dateOfBirth)
+      await petsService.updatePet(
+        id,
+        draft.name,
+        draft.dateOfBirth,
+        draft.species,
+      )
       await load()
       onMessage('Pet updated.')
     } catch (err) {
@@ -101,7 +141,7 @@ export function PetsSection({
     setAdding(true)
     onError('')
     try {
-      await petsService.createPet(newPet.name, newPet.dateOfBirth)
+      await petsService.createPet(newPet.name, newPet.dateOfBirth, newPet.species)
       setNewPet(emptyDraft())
       await load()
       onMessage('Pet added.')
@@ -127,7 +167,7 @@ export function PetsSection({
     <section className="settings-card">
       <h2>Pets</h2>
       <p className="settings-help">
-        Add each puppy or dog in your household. Ages update automatically from
+        Add each dog or cat in your household. Ages update automatically from
         their date of birth.
       </p>
 
@@ -139,6 +179,7 @@ export function PetsSection({
             const draft = drafts[pet.id] ?? {
               name: pet.name,
               dateOfBirth: formatDateOfBirth(pet.dateOfBirth),
+              species: pet.species,
             }
             const previewAge = draft.dateOfBirth
               ? formatPetAge(new Date(`${draft.dateOfBirth}T00:00:00`))
@@ -147,6 +188,10 @@ export function PetsSection({
             return (
               <li key={pet.id} className="pet-card">
                 <div className="pet-card-fields">
+                  <SpeciesPicker
+                    value={draft.species}
+                    onChange={(species) => updateDraft(pet.id, { species })}
+                  />
                   <label>
                     Name
                     <input
@@ -192,6 +237,10 @@ export function PetsSection({
 
       <form className="add-pet-form" onSubmit={addPet}>
         <h3>Add a pet</h3>
+        <SpeciesPicker
+          value={newPet.species}
+          onChange={(species) => setNewPet((prev) => ({ ...prev, species }))}
+        />
         <label>
           Name
           <input

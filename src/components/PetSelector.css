@@ -1,0 +1,36 @@
+.pet-selector {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 16px 8px;
+  scrollbar-width: none;
+}
+
+.pet-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.pet-selector-chip {
+  flex-shrink: 0;
+  border: 1px solid var(--intro-border);
+  background: var(--card);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pet-selector-chip.active {
+  background: var(--header);
+  border-color: var(--header);
+  color: white;
+}
+
+[data-species='cat'] .pet-selector-chip.active {
+  background: var(--divider);
+  border-color: var(--divider);
+  color: #0d0d1a;
+}

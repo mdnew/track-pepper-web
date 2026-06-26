@@ -41,10 +41,18 @@
 }
 
 .calendar-card {
-  background: white;
+  background: var(--card);
   border-radius: 20px;
   padding: 12px;
-  box-shadow: 0 4px 12px rgb(44 26 14 / 6%);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+}
+
+.calendar-empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .calendar-loading {

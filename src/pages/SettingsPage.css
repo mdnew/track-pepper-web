@@ -181,6 +181,40 @@
   font-size: 15px;
 }
 
+.species-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.species-picker-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.species-picker-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.species-picker-options button {
+  padding: 10px 12px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.species-picker-options button.active {
+  border-color: var(--header);
+  background: #fffaf5;
+  color: var(--header);
+}
+
 .members-list {
   list-style: none;
   margin: 0;

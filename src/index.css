@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&family=Inter:wght@400;500;600&family=Lato:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
   --background: #fff8f0;
@@ -8,6 +8,13 @@
   --text-primary: #2c1a0e;
   --text-secondary: #7a5c3c;
   --divider: #c9a87c;
+  --progress-accent: #52b77a;
+  --progress-bg: #f0faf3;
+  --tip-bg: #fff5e6;
+  --tip-border: #f5a623;
+  --tip-text: #5c3a10;
+  --intro-bg: #ffffff;
+  --intro-border: #f5e4c8;
   --potty: #52b77a;
   --feed: #f5a623;
   --sleep: #6b8cff;

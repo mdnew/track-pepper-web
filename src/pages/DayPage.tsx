@@ -1,17 +1,22 @@
 import { format } from 'date-fns'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
+import { PetSelector } from '../components/PetSelector'
 import {
   CurrentTimeLine,
   ScheduleBlock,
   SectionDivider,
 } from '../components/ScheduleBlock'
 import { useAuth } from '../context/AuthContext'
+import { petsService } from '../services/pets'
 import { scheduleService } from '../services/schedule'
-import type { Completion, ScheduleTask } from '../types'
+import type { Completion, Pet, SchedulePlan, ScheduleTask } from '../types'
+import { applySpeciesTheme, speciesTheme } from '../theme/speciesTheme'
 import { isSameCalendarDay, parseDateKey, formatDateKey } from '../utils/formatDate'
 import { trackTaskComplete } from '../utils/analytics'
+import { resolveSelectedPetId, writeSelectedPetId } from '../utils/petSelection'
+import { resolvePlanForPet } from '../utils/schedulePlan'
 import {
   currentTimeInsertIndex,
   sortTasksChronologically,
@@ -20,11 +25,15 @@ import './DayPage.css'
 
 export function DayPage() {
   const { date: dateParam } = useParams<{ date: string }>()
+  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const { profile, user } = useAuth()
   const date = dateParam ? parseDateKey(dateParam) : new Date()
   const isToday = isSameCalendarDay(date, new Date())
 
+  const [pets, setPets] = useState<Pet[]>([])
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
+  const [plan, setPlan] = useState<SchedulePlan | null>(null)
   const [tasks, setTasks] = useState<ScheduleTask[]>([])
   const [completions, setCompletions] = useState<Record<string, Completion>>({})
   const [loading, setLoading] = useState(true)
@@ -34,18 +43,26 @@ export function DayPage() {
   const anchorRef = useRef<HTMLDivElement>(null)
   const hasScrolledRef = useRef(false)
 
+  const selectedPet = pets.find((pet) => pet.id === selectedPetId) ?? null
+  const theme = speciesTheme(selectedPet?.species ?? 'dog')
+
   const loadCompletions = useCallback(async () => {
-    if (!profile?.householdId || !dateParam) return
+    if (!profile?.householdId || !dateParam || !selectedPetId) return
     const rows = await scheduleService.getCompletionsForDate(
       profile.householdId,
+      selectedPetId,
       parseDateKey(dateParam),
     )
     setCompletions(Object.fromEntries(rows.map((c) => [c.taskId, c])))
-  }, [profile?.householdId, dateParam])
+  }, [profile?.householdId, dateParam, selectedPetId])
 
   useEffect(() => {
     hasScrolledRef.current = false
-  }, [dateParam])
+  }, [dateParam, selectedPetId])
+
+  useEffect(() => {
+    applySpeciesTheme(theme)
+  }, [theme])
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -66,16 +83,45 @@ export function DayPage() {
       setLoading(true)
       try {
         const day = parseDateKey(dateParam)
-        const nextTasks = await scheduleService.getTasks()
-        setTasks(sortTasksChronologically(nextTasks))
-        await loadCompletions()
-        channel = scheduleService.subscribeToCompletions(
-          profile!.householdId!,
-          day,
-          () => {
-            loadCompletions().catch(() => undefined)
-          },
+        const [nextPets, nextPlans] = await Promise.all([
+          petsService.getPets(),
+          scheduleService.getPlans(),
+        ])
+        setPets(nextPets)
+
+        const petId = resolveSelectedPetId(
+          nextPets,
+          searchParams.get('pet'),
         )
+        setSelectedPetId(petId)
+
+        const pet = nextPets.find((item) => item.id === petId) ?? null
+        const nextPlan = pet ? resolvePlanForPet(nextPlans, pet, day) : null
+        setPlan(nextPlan)
+
+        const nextTasks = nextPlan
+          ? await scheduleService.getTasksForPlan(nextPlan.id)
+          : []
+        setTasks(sortTasksChronologically(nextTasks))
+
+        if (petId) {
+          const rows = await scheduleService.getCompletionsForDate(
+            profile!.householdId!,
+            petId,
+            day,
+          )
+          setCompletions(Object.fromEntries(rows.map((c) => [c.taskId, c])))
+          channel = scheduleService.subscribeToCompletions(
+            profile!.householdId!,
+            petId,
+            day,
+            () => {
+              loadCompletions().catch(() => undefined)
+            },
+          )
+        } else {
+          setCompletions({})
+        }
       } finally {
         setLoading(false)
       }
@@ -86,7 +132,7 @@ export function DayPage() {
     return () => {
       channel?.unsubscribe()
     }
-  }, [profile?.householdId, dateParam, loadCompletions])
+  }, [profile?.householdId, dateParam, searchParams, loadCompletions])
 
   useEffect(() => {
     if (!isToday || loading || hasScrolledRef.current || !scrollRef.current) {
@@ -116,15 +162,22 @@ export function DayPage() {
     })
 
     return () => cancelAnimationFrame(frame)
-  }, [isToday, loading, tasks.length, dateParam])
+  }, [isToday, loading, tasks.length, dateParam, selectedPetId])
+
+  function handlePetSelect(petId: string) {
+    setSelectedPetId(petId)
+    writeSelectedPetId(petId)
+    setSearchParams({ pet: petId }, { replace: true })
+  }
 
   async function toggleTask(task: ScheduleTask, completed: boolean) {
-    if (!profile?.householdId || !user) return
+    if (!profile?.householdId || !user || !selectedPetId) return
     setLoadingTasks((prev) => new Set(prev).add(task.id))
     try {
       if (completed) {
         await scheduleService.completeTask(
           profile.householdId,
+          selectedPetId,
           task.id,
           date,
           user.id,
@@ -137,7 +190,12 @@ export function DayPage() {
           isToday,
         })
       } else {
-        await scheduleService.uncompleteTask(profile.householdId, task.id, date)
+        await scheduleService.uncompleteTask(
+          profile.householdId,
+          selectedPetId,
+          task.id,
+          date,
+        )
       }
       await loadCompletions()
     } finally {
@@ -160,7 +218,7 @@ export function DayPage() {
     if (isToday && taskIndex === nowIndex) {
       taskElements.push(
         <div key="now-line" ref={nowLineRef}>
-          <CurrentTimeLine time={now} />
+          <CurrentTimeLine time={now} species={selectedPet?.species ?? 'dog'} />
         </div>,
       )
     }
@@ -172,15 +230,13 @@ export function DayPage() {
       )
     }
 
-    const ref =
-      taskIndex === nowIndex - 1
-        ? anchorRef
-        : undefined
+    const ref = taskIndex === nowIndex - 1 ? anchorRef : undefined
 
     taskElements.push(
       <div key={task.id} ref={ref}>
         <ScheduleBlock
           task={task}
+          species={selectedPet?.species ?? 'dog'}
           completion={completions[task.id]}
           loading={loadingTasks.has(task.id)}
           onToggle={(v) => toggleTask(task, v)}
@@ -193,7 +249,7 @@ export function DayPage() {
   if (isToday && nowIndex === tasks.length) {
     taskElements.push(
       <div key="now-line-end" ref={nowLineRef}>
-        <CurrentTimeLine time={now} />
+        <CurrentTimeLine time={now} species={selectedPet?.species ?? 'dog'} />
       </div>,
     )
   }
@@ -209,7 +265,31 @@ export function DayPage() {
           <div className="header-spacer" />
         </header>
 
-        {!loading && (
+        <PetSelector
+          pets={pets}
+          selectedPetId={selectedPetId ?? ''}
+          onSelect={handlePetSelect}
+        />
+
+        {!loading && plan && (
+          <div className="plan-intro">
+            <span className="plan-intro-emoji" aria-hidden>
+              {plan.emoji}
+            </span>
+            <div>
+              <h2>{plan.introTitle ?? plan.name}</h2>
+              {plan.introDescription && <p>{plan.introDescription}</p>}
+            </div>
+          </div>
+        )}
+
+        {!loading && pets.length === 0 && (
+          <div className="empty-pets-banner">
+            Add a pet in Settings to see an age-appropriate schedule.
+          </div>
+        )}
+
+        {!loading && selectedPet && tasks.length > 0 && (
           <div className="progress-banner">
             <div className="progress-row">
               <span>Today&apos;s progress</span>
@@ -238,16 +318,12 @@ export function DayPage() {
       ) : (
         <div className="day-scroll fixed-page-scroll" ref={scrollRef}>
           <div className="day-tasks">{taskElements}</div>
-          <div className="tip-box">
-            <strong>🐾 Quick Reminders</strong>
-            <p>
-              Outside within 5–10 min of every meal, nap, and play session.
-              Training = 5 min max. Praise every potty outside. Overnight trips
-              should be boring on purpose — lights low, no talking beyond a calm
-              &quot;good girl.&quot; She&apos;ll drop the overnight trip around
-              4–5 months.
-            </p>
-          </div>
+          {plan?.tipsBody && (
+            <div className="tip-box">
+              <strong>{plan.tipsTitle ?? 'Key Notes'}</strong>
+              <p>{plan.tipsBody}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
