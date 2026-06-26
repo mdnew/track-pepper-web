@@ -10,7 +10,8 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { scheduleService } from '../services/schedule'
 import type { Completion, ScheduleTask } from '../types'
-import { isSameCalendarDay, parseDateKey } from '../utils/formatDate'
+import { isSameCalendarDay, parseDateKey, formatDateKey } from '../utils/formatDate'
+import { trackTaskComplete } from '../utils/analytics'
 import {
   currentTimeInsertIndex,
   sortTasksChronologically,
@@ -120,6 +121,13 @@ export function DayPage() {
           date,
           user.id,
         )
+        trackTaskComplete({
+          taskId: task.id,
+          category: task.category,
+          section: task.section,
+          date: formatDateKey(date),
+          isToday,
+        })
       } else {
         await scheduleService.uncompleteTask(profile.householdId, task.id, date)
       }
