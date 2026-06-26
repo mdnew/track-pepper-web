@@ -30,6 +30,22 @@
   font-size: 14px;
 }
 
+.auth-blurb {
+  margin: 0 0 28px;
+  padding: 16px 18px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgb(44 26 14 / 6%);
+}
+
+.auth-blurb p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
 .auth-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,6 +1,6 @@
 # TrackPepper — Web
 
-React web app sharing the same Supabase backend as the iOS app.
+A shared daily schedule for your puppy. Track feedings, potty breaks, naps, and training as a family — check tasks off as you go and see your progress on a calendar, synced in real time across phones and the web.
 
 **Repo:** [github.com/mdnew/track-pepper-web](https://github.com/mdnew/track-pepper-web)
 

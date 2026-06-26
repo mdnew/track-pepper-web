@@ -65,7 +65,14 @@ export function AuthPage() {
           🐶
         </span>
         <h1>TrackPepper</h1>
-        <p className="auth-subtitle">Family puppy schedule</p>
+        <div className="auth-blurb">
+          <p>
+            A shared daily schedule for your puppy. Track feedings, potty breaks,
+            naps, and training as a family — check tasks off as you go and see
+            your progress on a calendar, synced in real time across phones and
+            the web.
+          </p>
+        </div>
 
         <div className="auth-tabs">
           <button
