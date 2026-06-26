@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { ConfigErrorScreen, LoadingScreen } from './components/ui'
+import { PageViewTracker } from './components/PageViewTracker'
 import { env } from './config/env'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { AuthPage } from './pages/AuthPage'
@@ -68,6 +69,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <PageViewTracker />
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>
