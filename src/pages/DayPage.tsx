@@ -48,6 +48,14 @@ export function DayPage() {
   }, [dateParam])
 
   useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [])
+
+  useEffect(() => {
     if (!profile?.householdId || !dateParam) return
 
     let channel: ReturnType<typeof scheduleService.subscribeToCompletions> | null =
@@ -192,20 +200,16 @@ export function DayPage() {
 
   return (
     <div className="page-with-header day-layout">
-      <header className="app-header">
-        <button type="button" className="back-button" onClick={() => navigate('/')}>
-          ‹
-        </button>
-        <h1>{format(date, 'EEEE, MMMM d, yyyy')}</h1>
-        <div className="header-spacer" />
-      </header>
+      <div className="day-layout-top">
+        <header className="app-header">
+          <button type="button" className="back-button" onClick={() => navigate('/')}>
+            ‹
+          </button>
+          <h1>{format(date, 'EEEE, MMMM d, yyyy')}</h1>
+          <div className="header-spacer" />
+        </header>
 
-      {loading ? (
-        <div className="day-loading">
-          <div className="spinner" />
-        </div>
-      ) : (
-        <>
+        {!loading && (
           <div className="progress-banner">
             <div className="progress-row">
               <span>Today&apos;s progress</span>
@@ -224,21 +228,27 @@ export function DayPage() {
               />
             </div>
           </div>
+        )}
+      </div>
 
-          <div className="day-scroll" ref={scrollRef}>
-            <div className="day-tasks">{taskElements}</div>
-            <div className="tip-box">
-              <strong>🐾 Quick Reminders</strong>
-              <p>
-                Outside within 5–10 min of every meal, nap, and play session.
-                Training = 5 min max. Praise every potty outside. Overnight trips
-                should be boring on purpose — lights low, no talking beyond a calm
-                &quot;good girl.&quot; She&apos;ll drop the overnight trip around
-                4–5 months.
-              </p>
-            </div>
+      {loading ? (
+        <div className="day-loading">
+          <div className="spinner" />
+        </div>
+      ) : (
+        <div className="day-scroll" ref={scrollRef}>
+          <div className="day-tasks">{taskElements}</div>
+          <div className="tip-box">
+            <strong>🐾 Quick Reminders</strong>
+            <p>
+              Outside within 5–10 min of every meal, nap, and play session.
+              Training = 5 min max. Praise every potty outside. Overnight trips
+              should be boring on purpose — lights low, no talking beyond a calm
+              &quot;good girl.&quot; She&apos;ll drop the overnight trip around
+              4–5 months.
+            </p>
           </div>
-        </>
+        </div>
       )}
     </div>
   )
