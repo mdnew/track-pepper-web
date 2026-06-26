@@ -5,14 +5,11 @@ import { PetSelector } from '../components/PetSelector'
 import { AppHeader } from '../components/ui'
 import { MonthCalendar } from '../components/MonthCalendar'
 import { useAuth } from '../context/AuthContext'
-import { authService } from '../services/auth'
 import { petsService } from '../services/pets'
 import { scheduleService } from '../services/schedule'
-import type { Pet, SchedulePlan } from '../types'
+import type { Pet } from '../types'
 import { applySpeciesTheme, speciesTheme } from '../theme/speciesTheme'
-import { formatPetSummary } from '../utils/petAge'
-import { resolveSelectedPetId, writeSelectedPetId } from '../utils/petSelection'
-import { resolvePlanForPet } from '../utils/schedulePlan'
+import { resolveSelectedPetId, readSelectedPetId, writeSelectedPetId } from '../utils/petSelection'
 import './CalendarPage.css'
 
 export function CalendarPage() {
@@ -20,30 +17,29 @@ export function CalendarPage() {
   const { profile } = useAuth()
   const [focusedMonth, setFocusedMonth] = useState(new Date())
   const [pets, setPets] = useState<Pet[]>([])
-  const [plans, setPlans] = useState<SchedulePlan[]>([])
-  const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(() =>
+    readSelectedPetId(),
+  )
   const [taskCount, setTaskCount] = useState(0)
   const [completionCounts, setCompletionCounts] = useState<Map<string, number>>(
     new Map(),
   )
-  const [householdName, setHouseholdName] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   const selectedPet = pets.find((pet) => pet.id === selectedPetId) ?? null
-  const plan = selectedPet ? resolvePlanForPet(plans, selectedPet) : null
   const theme = speciesTheme(selectedPet?.species ?? 'dog')
 
   const loadData = useCallback(async () => {
     if (!profile?.householdId) return
     setLoading(true)
     try {
-      const [nextPets, nextPlans, household] = await Promise.all([
+      const [nextPets, nextPlans] = await Promise.all([
         petsService.getPets(),
         scheduleService.getPlans(),
-        authService.getHousehold(),
       ])
 
-      const petId = selectedPetId ?? resolveSelectedPetId(nextPets)
+      const petId = resolveSelectedPetId(nextPets, selectedPetId)
+      if (petId) writeSelectedPetId(petId)
       const pet = nextPets.find((item) => item.id === petId) ?? null
       const schedule = pet
         ? await scheduleService.getScheduleForPet(pet, nextPlans, new Date())
@@ -58,11 +54,9 @@ export function CalendarPage() {
         : new Map<string, number>()
 
       setPets(nextPets)
-      setPlans(nextPlans)
       setSelectedPetId(petId)
       setTaskCount(schedule.tasks.length)
       setCompletionCounts(counts)
-      setHouseholdName(household?.name ?? null)
     } finally {
       setLoading(false)
     }
@@ -91,29 +85,9 @@ export function CalendarPage() {
 
   return (
     <div className="page-with-header fixed-page-layout">
-      <AppHeader
-        title="TrackPepper"
-        onSettings={() => navigate('/settings')}
-      />
+      <AppHeader onSettings={() => navigate('/settings')} />
 
       <main className="calendar-page fixed-page-scroll">
-        <div className="header-card">
-          <span className="header-emoji" aria-hidden>
-            {selectedPet ? theme.emoji : '🐾'}
-          </span>
-          <div>
-            <h2>{householdName ?? 'Daily Schedule'}</h2>
-            <p>
-              {selectedPet
-                ? `${formatPetSummary(selectedPet)}${plan ? ` · ${plan.name}` : ''}`
-                : 'Add a pet in Settings to get a personalized schedule'}
-            </p>
-            {profile?.displayName && (
-              <p className="signed-in">Signed in as {profile.displayName}</p>
-            )}
-          </div>
-        </div>
-
         <PetSelector
           pets={pets}
           selectedPetId={selectedPetId ?? ''}

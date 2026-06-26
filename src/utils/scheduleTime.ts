@@ -3,7 +3,7 @@ import { parse } from 'date-fns'
 import type { ScheduleTask } from '../types'
 
 export function scheduleMinutesFromLabel(timeLabel: string): number | null {
-  const trimmed = timeLabel.trim()
+  const trimmed = timeLabel.trim().replace(/^~+/, '')
   if (!trimmed || !/\d/.test(trimmed) || !/(am|pm)/i.test(trimmed)) {
     return null
   }
@@ -15,13 +15,13 @@ export function scheduleMinutesFromLabel(timeLabel: string): number | null {
 
 export function sortTasksChronologically(tasks: ScheduleTask[]): ScheduleTask[] {
   return [...tasks].sort((a, b) => {
-    const orderDiff = a.sortOrder - b.sortOrder
-    if (orderDiff !== 0) return orderDiff
-
     const aMinutes = scheduleMinutesFromLabel(a.timeLabel)
     const bMinutes = scheduleMinutesFromLabel(b.timeLabel)
+
     if (aMinutes != null && bMinutes != null) return aMinutes - bMinutes
-    return 0
+    if (aMinutes != null) return -1
+    if (bMinutes != null) return 1
+    return a.sortOrder - b.sortOrder
   })
 }
 

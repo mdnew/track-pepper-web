@@ -23,26 +23,17 @@ export function ScheduleBlock({
   const isCompleted = completion != null
   const borderColor = categoryColor(task.category, species)
   const bgColor = categoryBackground(task.category, species)
-  const isCat = species === 'cat'
-  const textColor = isNight
-    ? colors.nightText
-    : isCat
-      ? '#C8D0E8'
-      : colors.textPrimary
-  const timeColor = isNight
-    ? colors.nightMuted
-    : isCat
-      ? '#8890B0'
-      : colors.textSecondary
+  const textColor = isNight ? colors.nightText : 'var(--text-primary)'
+  const timeColor = isNight ? colors.nightMuted : 'var(--text-secondary)'
   const attributionColor = isNight
     ? colors.nightMuted
-    : isCat
-      ? '#7B8FCC'
+    : species === 'cat'
+      ? 'var(--progress-accent)'
       : colors.potty
 
   return (
     <div
-      className={`schedule-block${isCat ? ' schedule-block-cat' : ''}`}
+      className="schedule-block"
       style={{
         backgroundColor: bgColor,
         borderLeftColor: borderColor,
@@ -59,7 +50,10 @@ export function ScheduleBlock({
           {task.title}
         </div>
         {task.subtitle && (
-          <div className="schedule-subtitle" style={{ color: textColor }}>
+          <div
+            className="schedule-subtitle"
+            style={{ color: isNight ? textColor : 'var(--text-secondary)' }}
+          >
             {task.subtitle}
           </div>
         )}
@@ -98,7 +92,7 @@ export function CurrentTimeLine({
   species?: PetSpecies
 }) {
   const label = format(time, 'h:mm a')
-  const accent = species === 'cat' ? '#7B8FCC' : colors.train
+  const accent = species === 'cat' ? 'var(--progress-accent)' : colors.train
   return (
     <div className="current-time-line">
       <span className="current-time-label" style={{ color: accent }}>

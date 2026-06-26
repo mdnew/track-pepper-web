@@ -1,3 +1,4 @@
+import { Logo } from './Logo'
 import { colors } from '../theme/colors'
 import './ErrorBanner.css'
 
@@ -20,10 +21,7 @@ export function ConfigErrorScreen({ message }: { message: string }) {
   return (
     <main className="center-page">
       <div className="card config-error">
-        <span className="emoji" aria-hidden>
-          🐶
-        </span>
-        <h1>TrackPepper</h1>
+        <Logo variant="brand" className="config-error-logo" />
         <p>{message}</p>
       </div>
     </main>
@@ -34,12 +32,12 @@ export function AppHeader({
   title,
   onSettings,
 }: {
-  title: string
+  title?: string
   onSettings?: () => void
 }) {
   return (
     <header className="app-header">
-      <h1>{title}</h1>
+      {title ? <h1>{title}</h1> : <Logo variant="header" />}
       {onSettings && (
         <button
           type="button"

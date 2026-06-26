@@ -33,7 +33,7 @@
 
 .schedule-subtitle {
   font-size: 12px;
-  opacity: 0.75;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 

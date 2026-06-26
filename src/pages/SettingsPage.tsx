@@ -2,6 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ErrorBanner } from '../components/ui'
+import {
+  EditablePasswordSetting,
+  EditableTextSetting,
+} from '../components/EditableSetting'
 import { PetsSection } from '../components/PetsSection'
 import { authService } from '../services/auth'
 import { useAuth } from '../context/AuthContext'
@@ -11,12 +15,10 @@ import './SettingsPage.css'
 export function SettingsPage() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
-  const [displayName, setDisplayName] = useState('')
-  const [householdName, setHouseholdName] = useState('')
   const [household, setHousehold] = useState<Household | null>(null)
   const [members, setMembers] = useState<Profile[]>([])
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [householdName, setHouseholdName] = useState('')
   const [loading, setLoading] = useState(true)
   const [savingName, setSavingName] = useState(false)
   const [savingHouseholdName, setSavingHouseholdName] = useState(false)
@@ -45,62 +47,56 @@ export function SettingsPage() {
     load()
   }, [load])
 
-  async function saveName(e: React.FormEvent) {
-    e.preventDefault()
+  async function saveName(nextName: string) {
     setSavingName(true)
     setError(null)
     setMessage(null)
     try {
-      await authService.updateDisplayName(displayName.trim())
+      await authService.updateDisplayName(nextName)
       await load()
       setMessage('Display name updated.')
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
+      throw err
     } finally {
       setSavingName(false)
     }
   }
 
-  async function saveHouseholdName(e: React.FormEvent) {
-    e.preventDefault()
-    if (!householdName.trim()) {
+  async function saveHouseholdName(nextName: string) {
+    if (!nextName.trim()) {
       setError('Household name is required.')
-      return
+      throw new Error('Household name is required.')
     }
     setSavingHouseholdName(true)
     setError(null)
     setMessage(null)
     try {
-      await authService.updateHouseholdName(householdName)
+      await authService.updateHouseholdName(nextName)
       await load()
       setMessage('Household name updated.')
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
+      throw err
     } finally {
       setSavingHouseholdName(false)
     }
   }
 
-  async function changePassword(e: React.FormEvent) {
-    e.preventDefault()
+  async function changePassword(newPassword: string) {
     if (newPassword.length < 6) {
       setError('Password must be at least 6 characters.')
-      return
-    }
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.')
-      return
+      throw new Error('Password must be at least 6 characters.')
     }
     setSavingPassword(true)
     setError(null)
     setMessage(null)
     try {
       await authService.updatePassword(newPassword)
-      setNewPassword('')
-      setConfirmPassword('')
       setMessage('Password updated.')
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
+      throw err
     } finally {
       setSavingPassword(false)
     }
@@ -133,102 +129,62 @@ export function SettingsPage() {
             {message && <div className="success-banner">{message}</div>}
 
             <section className="settings-card">
-              <h2>Your profile</h2>
-              <form onSubmit={saveName}>
-                <label>
-                  Display name
-                  <input
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                  />
-                </label>
-                <p className="read-only-label">Email</p>
-                <p className="read-only-value">{user?.email}</p>
-                <button type="submit" className="btn-primary" disabled={savingName}>
-                  {savingName ? 'Saving…' : 'Save name'}
-                </button>
-              </form>
-            </section>
-
-            <section className="settings-card">
-              <h2>Password</h2>
-              <form onSubmit={changePassword}>
-                <label>
-                  New password
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Confirm new password
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </label>
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  disabled={savingPassword}
-                >
-                  {savingPassword ? 'Updating…' : 'Update password'}
-                </button>
-              </form>
+              <h2>Profile</h2>
+              <EditableTextSetting
+                label="Display name"
+                value={displayName}
+                onSave={saveName}
+                saving={savingName}
+              />
+              <p className="read-only-label">Email</p>
+              <p className="read-only-value">{user?.email}</p>
+              <div className="settings-field-spacer">
+                <EditablePasswordSetting
+                  onSave={changePassword}
+                  saving={savingPassword}
+                />
+              </div>
             </section>
 
             {household && (
               <section className="settings-card">
                 <h2>Household</h2>
-                <form onSubmit={saveHouseholdName}>
-                  <label>
-                    Household name
-                    <input
-                      value={householdName}
-                      onChange={(e) => setHouseholdName(e.target.value)}
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    className="btn-primary"
-                    disabled={savingHouseholdName}
-                  >
-                    {savingHouseholdName ? 'Saving…' : 'Save household name'}
-                  </button>
-                </form>
+                <EditableTextSetting
+                  label="Household name"
+                  value={householdName}
+                  onSave={saveHouseholdName}
+                  saving={savingHouseholdName}
+                />
                 <p className="read-only-label">Invite code</p>
                 <div className="invite-box">{household.inviteCode}</div>
                 <button type="button" className="btn-outline" onClick={copyInvite}>
                   Copy invite code
                 </button>
+
+                <div className="household-subsection">
+                  <h3 className="household-subsection-title">Family members</h3>
+                  <ul className="members-list">
+                    {members.map((member) => (
+                      <li key={member.id}>
+                        <span className="member-avatar">
+                          {member.displayName.charAt(0).toUpperCase()}
+                        </span>
+                        <span>{member.displayName}</span>
+                        {member.id === user?.id && (
+                          <span className="you-badge">You</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <PetsSection
+                  embedded
+                  onMessage={setMessage}
+                  onError={(value) => setError(value || null)}
+                />
               </section>
             )}
-
-            {household && (
-              <PetsSection
-                onMessage={setMessage}
-                onError={(value) => setError(value || null)}
-              />
-            )}
-
-            <section className="settings-card">
-              <h2>Family members</h2>
-              <ul className="members-list">
-                {members.map((member) => (
-                  <li key={member.id}>
-                    <span className="member-avatar">
-                      {member.displayName.charAt(0).toUpperCase()}
-                    </span>
-                    <span>{member.displayName}</span>
-                    {member.id === user?.id && (
-                      <span className="you-badge">You</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </section>
 
             <button
               type="button"

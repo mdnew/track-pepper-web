@@ -10,10 +10,10 @@
   padding-top: 32px;
 }
 
-.auth-emoji {
-  display: block;
-  text-align: center;
-  font-size: 48px;
+.auth-logo {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 8px;
 }
 
 .auth-container h1 {

@@ -50,6 +50,12 @@
   text-align: center;
 }
 
+.config-error-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
 .config-error {
   border: 1px solid var(--train);
 }

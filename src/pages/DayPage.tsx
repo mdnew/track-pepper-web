@@ -2,7 +2,6 @@ import { format } from 'date-fns'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
-import { PetSelector } from '../components/PetSelector'
 import {
   CurrentTimeLine,
   ScheduleBlock,
@@ -24,7 +23,7 @@ import './DayPage.css'
 
 export function DayPage() {
   const { date: dateParam } = useParams<{ date: string }>()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { profile, user } = useAuth()
   const date = dateParam ? parseDateKey(dateParam) : new Date()
@@ -96,6 +95,7 @@ export function DayPage() {
         setPets(nextPets)
 
         const petId = resolveSelectedPetId(nextPets, petQuery)
+        if (petId) writeSelectedPetId(petId)
         setSelectedPetId(petId)
 
         const pet = nextPets.find((item) => item.id === petId) ?? null
@@ -169,12 +169,6 @@ export function DayPage() {
 
     return () => cancelAnimationFrame(frame)
   }, [isToday, loading, tasks.length, dateParam, selectedPetId])
-
-  function handlePetSelect(petId: string) {
-    setSelectedPetId(petId)
-    writeSelectedPetId(petId)
-    setSearchParams({ pet: petId }, { replace: true })
-  }
 
   async function toggleTask(task: ScheduleTask, completed: boolean) {
     if (!profile?.householdId || !user || !selectedPetId) return
@@ -270,24 +264,6 @@ export function DayPage() {
           <h1>{format(date, 'EEEE, MMMM d, yyyy')}</h1>
           <div className="header-spacer" />
         </header>
-
-        <PetSelector
-          pets={pets}
-          selectedPetId={selectedPetId ?? ''}
-          onSelect={handlePetSelect}
-        />
-
-        {!loading && plan && (
-          <div className="plan-intro">
-            <span className="plan-intro-emoji" aria-hidden>
-              {plan.emoji}
-            </span>
-            <div>
-              <h2>{plan.introTitle ?? plan.name}</h2>
-              {plan.introDescription && <p>{plan.introDescription}</p>}
-            </div>
-          </div>
-        )}
 
         {!loading && pets.length === 0 && (
           <div className="empty-pets-banner">

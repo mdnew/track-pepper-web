@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ErrorBanner } from '../components/ui'
+import { Logo } from '../components/Logo'
 import { authService } from '../services/auth'
 import { useAuth } from '../context/AuthContext'
 import { trackSignUp } from '../utils/analytics'
@@ -61,10 +62,7 @@ export function AuthPage() {
   return (
     <main className="auth-page">
       <div className="auth-container">
-        <span className="auth-emoji" aria-hidden>
-          🐶
-        </span>
-        <h1>TrackPepper</h1>
+        <Logo variant="brand" className="auth-logo" />
         <div className="auth-blurb">
           <p>
             A shared daily schedule for your puppy. Track feedings, potty breaks,

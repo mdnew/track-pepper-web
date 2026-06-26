@@ -26,35 +26,38 @@
   font-weight: 800;
 }
 
-.settings-card form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.settings-card .read-only-label {
+  margin-top: 16px;
 }
 
-.settings-card label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
+.settings-field-spacer {
+  margin-top: 16px;
 }
 
-.settings-card input {
-  padding: 12px 14px;
-  border: 1px solid rgb(201 168 124 / 40%);
+.btn-primary {
+  padding: 14px;
+  background: var(--header);
+  color: white;
+  border: none;
   border-radius: 12px;
+  font-weight: 700;
   font-size: 15px;
+  cursor: pointer;
 }
 
-.settings-card form + .read-only-label,
-.settings-card form + .read-only-label + .read-only-value {
-  margin-top: 0;
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.settings-card form:not(:last-child) {
-  margin-bottom: 16px;
+.btn-outline {
+  padding: 12px 20px;
+  background: white;
+  border: 1px solid var(--header);
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--header);
 }
 
 .read-only-label {
@@ -101,10 +104,50 @@
   background: #fffaf5;
 }
 
-.pet-card-fields {
+.pet-card-readonly {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pet-summary {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pet-dob {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.pet-remove-btn {
+  margin-top: 8px;
+}
+
+.add-pet-button {
+  width: 100%;
+}
+
+.add-pet-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgb(201 168 124 / 25%);
+}
+
+.add-pet-form:first-child,
+.pets-list + .add-pet-form,
+.pets-list + .add-pet-button {
+  margin-top: 0;
+}
+
+.pets-list + .add-pet-button,
+.pets-list + .add-pet-form {
+  margin-top: 16px;
 }
 
 .pet-card-fields label {
@@ -130,17 +173,10 @@
   color: var(--potty);
 }
 
-.pet-card-actions {
+.pet-card-fields {
   display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-top: 12px;
-}
-
-.pet-card-actions .btn-primary {
-  margin-top: 0;
-  width: auto;
-  padding-inline: 18px;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .btn-text-danger {
@@ -213,6 +249,40 @@
   border-color: var(--header);
   background: #fffaf5;
   color: var(--header);
+}
+
+.invite-box {
+  padding: 16px;
+  background: var(--feed-bg);
+  border: 1px solid var(--feed);
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-align: center;
+  margin: 8px 0 12px;
+}
+
+.household-subsection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgb(201 168 124 / 25%);
+}
+
+.household-subsection-title {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.household-subsection .settings-help {
+  margin-bottom: 12px;
+}
+
+.add-pet-form-embedded {
+  border-top: none;
+  padding-top: 0;
 }
 
 .members-list {

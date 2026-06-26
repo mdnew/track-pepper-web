@@ -12,22 +12,20 @@ export function PetSelector({ pets, selectedPetId, onSelect }: Props) {
   if (pets.length <= 1) return null
 
   return (
-    <div className="pet-selector" role="tablist" aria-label="Select pet">
-      {pets.map((pet) => {
-        const active = pet.id === selectedPetId
-        return (
-          <button
-            key={pet.id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            className={`pet-selector-chip${active ? ' active' : ''}`}
-            onClick={() => onSelect(pet.id)}
-          >
+    <div className="pet-selector">
+      <select
+        id="pet-select"
+        className="pet-selector-dropdown"
+        value={selectedPetId}
+        aria-label="Select pet"
+        onChange={(e) => onSelect(e.target.value)}
+      >
+        {pets.map((pet) => (
+          <option key={pet.id} value={pet.id}>
             {formatPetSummary(pet)}
-          </button>
-        )
-      })}
+          </option>
+        ))}
+      </select>
     </div>
   )
 }

@@ -6,40 +6,6 @@
   width: 100%;
 }
 
-.header-card {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  background: var(--header);
-  color: white;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
-}
-
-.header-emoji {
-  font-size: 40px;
-  line-height: 1;
-}
-
-.header-card h2 {
-  margin: 0 0 2px;
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.header-card p {
-  margin: 0;
-  font-size: 12px;
-  color: var(--header-subtitle);
-}
-
-.signed-in {
-  margin-top: 4px !important;
-  color: rgb(255 255 255 / 70%) !important;
-  font-size: 11px !important;
-}
-
 .calendar-card {
   background: var(--card);
   border-radius: 20px;

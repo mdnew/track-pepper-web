@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { EditIconButton } from './EditableSetting'
 import { petsService } from '../services/pets'
 import type { Pet, PetSpecies } from '../types'
-import { formatDateOfBirth, formatPetAge } from '../utils/petAge'
+import {
+  formatDateOfBirth,
+  formatPetAge,
+  formatPetSummary,
+} from '../utils/petAge'
+import './EditableSetting.css'
 
 type PetDraft = {
   name: string
@@ -42,16 +48,118 @@ function SpeciesPicker({
   )
 }
 
+function PetCard({
+  pet,
+  draft,
+  editing,
+  saving,
+  deleting,
+  onEdit,
+  onCancel,
+  onUpdateDraft,
+  onSave,
+  onRemove,
+}: {
+  pet: Pet
+  draft: PetDraft
+  editing: boolean
+  saving: boolean
+  deleting: boolean
+  onEdit: () => void
+  onCancel: () => void
+  onUpdateDraft: (patch: Partial<PetDraft>) => void
+  onSave: () => void
+  onRemove: () => void
+}) {
+  const previewAge = draft.dateOfBirth
+    ? formatPetAge(new Date(`${draft.dateOfBirth}T00:00:00`))
+    : null
+
+  if (!editing) {
+    return (
+      <li className="pet-card">
+        <div className="pet-card-readonly">
+          <div>
+            <p className="pet-summary">{formatPetSummary(pet)}</p>
+            <p className="pet-dob">
+              Born {formatDateOfBirth(pet.dateOfBirth)}
+            </p>
+          </div>
+          <EditIconButton label={`Edit ${pet.name}`} onClick={onEdit} />
+        </div>
+      </li>
+    )
+  }
+
+  return (
+    <li className="pet-card">
+      <div className="pet-card-fields">
+        <SpeciesPicker
+          value={draft.species}
+          onChange={(species) => onUpdateDraft({ species })}
+        />
+        <label>
+          Name
+          <input
+            value={draft.name}
+            onChange={(e) => onUpdateDraft({ name: e.target.value })}
+            autoFocus
+          />
+        </label>
+        <label>
+          Date of birth
+          <input
+            type="date"
+            value={draft.dateOfBirth}
+            onChange={(e) => onUpdateDraft({ dateOfBirth: e.target.value })}
+          />
+        </label>
+        {previewAge && <p className="pet-age">{previewAge}</p>}
+      </div>
+      <div className="editable-setting-actions">
+        <button
+          type="button"
+          className="btn-outline"
+          disabled={saving || deleting}
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          className="btn-primary"
+          disabled={saving || deleting}
+          onClick={onSave}
+        >
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+      </div>
+      <button
+        type="button"
+        className="btn-text-danger pet-remove-btn"
+        disabled={saving || deleting}
+        onClick={onRemove}
+      >
+        {deleting ? 'Removing…' : 'Remove pet'}
+      </button>
+    </li>
+  )
+}
+
 export function PetsSection({
+  embedded = false,
   onMessage,
   onError,
 }: {
+  embedded?: boolean
   onMessage: (message: string) => void
   onError: (message: string) => void
 }) {
   const [pets, setPets] = useState<Pet[]>([])
   const [drafts, setDrafts] = useState<Record<string, PetDraft>>({})
   const [newPet, setNewPet] = useState<PetDraft>(emptyDraft())
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [showAddForm, setShowAddForm] = useState(false)
   const [loading, setLoading] = useState(true)
   const [savingId, setSavingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -74,6 +182,7 @@ export function PetsSection({
           ]),
         ),
       )
+      setEditingId(null)
     } finally {
       setLoading(false)
     }
@@ -88,6 +197,35 @@ export function PetsSection({
       ...prev,
       [id]: { ...prev[id], ...patch },
     }))
+  }
+
+  function startEdit(id: string) {
+    const pet = pets.find((item) => item.id === id)
+    if (!pet) return
+    setEditingId(id)
+    setDrafts((prev) => ({
+      ...prev,
+      [id]: {
+        name: pet.name,
+        dateOfBirth: formatDateOfBirth(pet.dateOfBirth),
+        species: pet.species,
+      },
+    }))
+  }
+
+  function cancelEdit(id: string) {
+    const pet = pets.find((item) => item.id === id)
+    if (pet) {
+      setDrafts((prev) => ({
+        ...prev,
+        [id]: {
+          name: pet.name,
+          dateOfBirth: formatDateOfBirth(pet.dateOfBirth),
+          species: pet.species,
+        },
+      }))
+    }
+    setEditingId(null)
   }
 
   async function savePet(id: string) {
@@ -143,6 +281,7 @@ export function PetsSection({
     try {
       await petsService.createPet(newPet.name, newPet.dateOfBirth, newPet.species)
       setNewPet(emptyDraft())
+      setShowAddForm(false)
       await load()
       onMessage('Pet added.')
     } catch (err) {
@@ -152,28 +291,45 @@ export function PetsSection({
     }
   }
 
+  function cancelAdd() {
+    setNewPet(emptyDraft())
+    setShowAddForm(false)
+  }
+
   if (loading) {
+    const loadingContent = (
+      <div className="settings-loading inline">
+        <div className="spinner" />
+      </div>
+    )
+
+    if (embedded) {
+      return (
+        <div className="household-subsection">
+          <h3 className="household-subsection-title">Pets</h3>
+          {loadingContent}
+        </div>
+      )
+    }
+
     return (
       <section className="settings-card">
         <h2>Pets</h2>
-        <div className="settings-loading inline">
-          <div className="spinner" />
-        </div>
+        {loadingContent}
       </section>
     )
   }
 
-  return (
-    <section className="settings-card">
-      <h2>Pets</h2>
+  const content = (
+    <>
+      {!embedded && <h2>Pets</h2>}
+      {embedded && <h3 className="household-subsection-title">Pets</h3>}
       <p className="settings-help">
         Add each dog or cat in your household. Ages update automatically from
         their date of birth.
       </p>
 
-      {pets.length === 0 ? (
-        <p className="settings-empty">No pets yet.</p>
-      ) : (
+      {pets.length > 0 && (
         <ul className="pets-list">
           {pets.map((pet) => {
             const draft = drafts[pet.id] ?? {
@@ -181,88 +337,86 @@ export function PetsSection({
               dateOfBirth: formatDateOfBirth(pet.dateOfBirth),
               species: pet.species,
             }
-            const previewAge = draft.dateOfBirth
-              ? formatPetAge(new Date(`${draft.dateOfBirth}T00:00:00`))
-              : null
 
             return (
-              <li key={pet.id} className="pet-card">
-                <div className="pet-card-fields">
-                  <SpeciesPicker
-                    value={draft.species}
-                    onChange={(species) => updateDraft(pet.id, { species })}
-                  />
-                  <label>
-                    Name
-                    <input
-                      value={draft.name}
-                      onChange={(e) => updateDraft(pet.id, { name: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    Date of birth
-                    <input
-                      type="date"
-                      value={draft.dateOfBirth}
-                      onChange={(e) =>
-                        updateDraft(pet.id, { dateOfBirth: e.target.value })
-                      }
-                    />
-                  </label>
-                  {previewAge && <p className="pet-age">{previewAge}</p>}
-                </div>
-                <div className="pet-card-actions">
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    disabled={savingId === pet.id}
-                    onClick={() => savePet(pet.id)}
-                  >
-                    {savingId === pet.id ? 'Saving…' : 'Save'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-text-danger"
-                    disabled={deletingId === pet.id}
-                    onClick={() => removePet(pet.id)}
-                  >
-                    {deletingId === pet.id ? 'Removing…' : 'Remove'}
-                  </button>
-                </div>
-              </li>
+              <PetCard
+                key={pet.id}
+                pet={pet}
+                draft={draft}
+                editing={editingId === pet.id}
+                saving={savingId === pet.id}
+                deleting={deletingId === pet.id}
+                onEdit={() => startEdit(pet.id)}
+                onCancel={() => cancelEdit(pet.id)}
+                onUpdateDraft={(patch) => updateDraft(pet.id, patch)}
+                onSave={() => savePet(pet.id)}
+                onRemove={() => removePet(pet.id)}
+              />
             )
           })}
         </ul>
       )}
 
-      <form className="add-pet-form" onSubmit={addPet}>
-        <h3>Add a pet</h3>
-        <SpeciesPicker
-          value={newPet.species}
-          onChange={(species) => setNewPet((prev) => ({ ...prev, species }))}
-        />
-        <label>
-          Name
-          <input
-            value={newPet.name}
-            onChange={(e) => setNewPet((prev) => ({ ...prev, name: e.target.value }))}
-            placeholder="Pepper"
+      {showAddForm ? (
+        <form
+          className={`add-pet-form${embedded ? ' add-pet-form-embedded' : ''}`}
+          onSubmit={addPet}
+        >
+          <h3>Add a pet</h3>
+          <SpeciesPicker
+            value={newPet.species}
+            onChange={(species) => setNewPet((prev) => ({ ...prev, species }))}
           />
-        </label>
-        <label>
-          Date of birth
-          <input
-            type="date"
-            value={newPet.dateOfBirth}
-            onChange={(e) =>
-              setNewPet((prev) => ({ ...prev, dateOfBirth: e.target.value }))
-            }
-          />
-        </label>
-        <button type="submit" className="btn-outline" disabled={adding}>
-          {adding ? 'Adding…' : 'Add pet'}
+          <label>
+            Name
+            <input
+              value={newPet.name}
+              onChange={(e) =>
+                setNewPet((prev) => ({ ...prev, name: e.target.value }))
+              }
+              placeholder="Pepper"
+              autoFocus
+            />
+          </label>
+          <label>
+            Date of birth
+            <input
+              type="date"
+              value={newPet.dateOfBirth}
+              onChange={(e) =>
+                setNewPet((prev) => ({ ...prev, dateOfBirth: e.target.value }))
+              }
+            />
+          </label>
+          <div className="editable-setting-actions">
+            <button
+              type="button"
+              className="btn-outline"
+              disabled={adding}
+              onClick={cancelAdd}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary" disabled={adding}>
+              {adding ? 'Adding…' : 'Add pet'}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <button
+          type="button"
+          className="btn-outline add-pet-button"
+          onClick={() => setShowAddForm(true)}
+        >
+          Add pet
         </button>
-      </form>
-    </section>
+      )}
+    </>
   )
+
+  if (embedded) {
+    return <div className="household-subsection">{content}</div>
+  }
+
+  return <section className="settings-card">{content}</section>
 }
