@@ -43,3 +43,7 @@ export function trackTaskComplete(params: {
     is_today: params.isToday,
   })
 }
+
+export function trackSignUp() {
+  window.gtag?.('event', 'sign_up', { method: 'email' })
+}

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { ErrorBanner } from '../components/ui'
 import { authService } from '../services/auth'
 import { useAuth } from '../context/AuthContext'
+import { trackSignUp } from '../utils/analytics'
 import './AuthPage.css'
 
 export function AuthPage() {
@@ -48,6 +49,7 @@ export function AuthPage() {
       const email = signUpEmail.trim()
       await authService.signUp(email, signUpPassword, signUpName.trim())
       await authService.signIn(email, signUpPassword)
+      trackSignUp()
       await refreshProfile()
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
