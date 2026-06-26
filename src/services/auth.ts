@@ -1,7 +1,6 @@
 import type { Household, Profile } from '../types'
 import { env } from '../config/env'
 import { supabase } from '../lib/supabase'
-import { getAuthParamsFromUrl, parseAuthCallbackUrl } from '../utils/authCallback'
 
 function requireClient() {
   if (!supabase) throw new Error('Supabase is not configured')
@@ -60,32 +59,6 @@ export const authService = {
       redirectTo: env.passwordResetRedirectUrl,
     })
     if (error) throw error
-  },
-
-  async recoverSessionFromResetLink(rawUrl: string) {
-    const client = requireClient()
-    const uri = parseAuthCallbackUrl(rawUrl)
-    const params = getAuthParamsFromUrl(uri)
-
-    if (params.code) {
-      const { error } = await client.auth.exchangeCodeForSession(params.code)
-      if (error) throw error
-      return
-    }
-
-    if (params.access_token && params.refresh_token) {
-      const { error } = await client.auth.setSession({
-        access_token: params.access_token,
-        refresh_token: params.refresh_token,
-      })
-      if (error) throw error
-      if (params.type !== 'recovery') {
-        throw new Error('That link is not a password reset link.')
-      }
-      return
-    }
-
-    throw new Error('That link is not a password reset link.')
   },
 
   async completePasswordReset(newPassword: string) {

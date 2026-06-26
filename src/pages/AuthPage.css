@@ -114,30 +114,6 @@
   margin: 8px 0 0;
 }
 
-.paste-section {
-  margin-top: 32px;
-}
-
-.paste-section hr {
-  border: none;
-  border-top: 1px solid var(--divider);
-  margin: 0 0 20px;
-}
-
-.paste-section h3 {
-  margin: 0 0 8px;
-  font-size: 16px;
-}
-
-.paste-section textarea {
-  padding: 12px;
-  border: 1px solid rgb(201 168 124 / 40%);
-  border-radius: 12px;
-  font-size: 13px;
-  font-family: inherit;
-  resize: vertical;
-}
-
 .reset-title {
   text-align: center;
   margin: 0 0 8px;

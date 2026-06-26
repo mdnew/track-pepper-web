@@ -1,24 +1,18 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { ErrorBanner } from '../components/ui'
 import { authService } from '../services/auth'
-import { useAuth } from '../context/AuthContext'
 import './AuthPage.css'
 
 export function ForgotPasswordPage() {
   const location = useLocation()
-  const navigate = useNavigate()
-  const { setPasswordRecovery } = useAuth()
   const initialEmail = (location.state as { email?: string } | null)?.email ?? ''
 
   const [email, setEmail] = useState(initialEmail)
-  const [link, setLink] = useState('')
   const [loading, setLoading] = useState(false)
-  const [linkLoading, setLinkLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [linkError, setLinkError] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -35,25 +29,6 @@ export function ForgotPasswordPage() {
       setError(err instanceof Error ? err.message : String(err))
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function handlePasteLink(e: React.FormEvent) {
-    e.preventDefault()
-    if (!link.trim()) {
-      setLinkError('Paste the full link.')
-      return
-    }
-    setLinkLoading(true)
-    setLinkError(null)
-    try {
-      await authService.recoverSessionFromResetLink(link)
-      setPasswordRecovery(true)
-      navigate('/reset-password', { replace: true })
-    } catch (err) {
-      setLinkError(err instanceof Error ? err.message : String(err))
-    } finally {
-      setLinkLoading(false)
     }
   }
 
@@ -99,32 +74,6 @@ export function ForgotPasswordPage() {
             </form>
           </>
         )}
-
-        <div className="paste-section">
-          <hr />
-          <h3>Link opened with an error?</h3>
-          <p className="auth-subtitle">
-            Copy the full URL from your email or browser and paste it here.
-          </p>
-          {linkError && <ErrorBanner message={linkError} />}
-          <form className="auth-form" onSubmit={handlePasteLink}>
-            <label>
-              Paste reset link
-              <textarea
-                rows={3}
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-              />
-            </label>
-            <button
-              type="submit"
-              className="btn-outline"
-              disabled={linkLoading}
-            >
-              {linkLoading ? 'Continuing…' : 'Continue with pasted link'}
-            </button>
-          </form>
-        </div>
       </div>
     </main>
   )
