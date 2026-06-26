@@ -30,10 +30,11 @@ function AppRoutes() {
   if (!session) {
     return (
       <Routes>
-        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/" element={<AuthPage />} />
+        <Route path="/auth" element={<Navigate to="/" replace />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="*" element={<Navigate to="/auth" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     )
   }

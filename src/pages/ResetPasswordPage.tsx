@@ -64,7 +64,7 @@ export function ResetPasswordPage() {
 
   useEffect(() => {
     if (!handlingCallback && !session && !pendingPasswordRecovery) {
-      navigate('/auth', { replace: true })
+      navigate('/', { replace: true })
     }
   }, [handlingCallback, session, pendingPasswordRecovery, navigate])
 

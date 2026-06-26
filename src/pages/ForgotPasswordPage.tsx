@@ -47,7 +47,7 @@ export function ForgotPasswordPage() {
               If an account exists for {email.trim()}, you&apos;ll get a password
               reset link shortly. Open it on this device to continue.
             </p>
-            <Link to="/auth" className="btn-primary link-button">
+            <Link to="/" className="btn-primary link-button">
               Back to sign in
             </Link>
           </>
