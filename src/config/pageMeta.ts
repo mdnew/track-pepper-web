@@ -41,6 +41,23 @@ export function resolvePageMeta(pathname: string): PageMetaConfig {
     }
   }
 
+  if (pathname === '/terms') {
+    return {
+      title: 'Terms of Service',
+      description: 'Terms of Service for TrackPepper, the shared pet care schedule app.',
+      path: '/terms',
+    }
+  }
+
+  if (pathname === '/privacy') {
+    return {
+      title: 'Privacy Policy',
+      description:
+        'How TrackPepper collects, uses, and protects your information when you use our website and mobile app.',
+      path: '/privacy',
+    }
+  }
+
   if (pathname === '/login' || pathname === '/auth') {
     return {
       title: 'Sign in',

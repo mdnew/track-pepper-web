@@ -79,6 +79,10 @@ export function MarketingLayout() {
         <div className="marketing-footer-inner">
           <Logo variant="brand" className="marketing-footer-logo" />
           <p>Shared daily schedules for dogs, cats, and the whole family.</p>
+          <nav className="marketing-footer-links" aria-label="Legal">
+            <Link to="/terms">Terms of Service</Link>
+            <Link to="/privacy">Privacy Policy</Link>
+          </nav>
         </div>
       </footer>
     </div>

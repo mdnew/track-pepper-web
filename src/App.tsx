@@ -16,7 +16,9 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { AboutPage } from './pages/marketing/AboutPage'
 import { HomePage } from './pages/marketing/HomePage'
+import { PrivacyPage } from './pages/marketing/PrivacyPage'
 import { SchedulesPage } from './pages/marketing/SchedulesPage'
+import { TermsPage } from './pages/marketing/TermsPage'
 
 function AppRoutes() {
   const { session, profile, loading, profileLoading, pendingPasswordRecovery } = useAuth()
@@ -39,6 +41,8 @@ function AppRoutes() {
           <Route path="/" element={<HomePage />} />
           <Route path="/schedules" element={<SchedulesPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/login" element={<AuthPage />} />
         </Route>
         <Route path="/auth" element={<Navigate to="/login" replace />} />
@@ -63,6 +67,8 @@ function AppRoutes() {
       <Route path="/" element={<CalendarPage />} />
       <Route path="/day/:date" element={<DayPage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

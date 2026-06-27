@@ -164,6 +164,26 @@
   color: #7a5c3c;
 }
 
+.marketing-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
+  margin-top: 4px;
+}
+
+.marketing-footer-links a {
+  font-size: 13px;
+  font-weight: 600;
+  color: #5c3d1e;
+  text-decoration: none;
+}
+
+.marketing-footer-links a:hover {
+  color: #c8791a;
+  text-decoration: underline;
+}
+
 @media (max-width: 640px) {
   .marketing-site {
     --marketing-gutter: 24px;
