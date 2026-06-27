@@ -176,7 +176,7 @@
 
 @media (max-width: 640px) {
   .home-hero {
-    padding: 20px 16px 36px;
+    padding: 24px var(--marketing-gutter, 24px) 40px;
   }
 
   .home-hero-inner {
@@ -221,8 +221,8 @@
 
   .home-features,
   .home-bottom-cta {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--marketing-gutter, 24px);
+    padding-right: var(--marketing-gutter, 24px);
   }
 
   .home-features {

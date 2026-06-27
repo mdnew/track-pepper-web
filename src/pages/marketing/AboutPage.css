@@ -73,6 +73,6 @@
 
 @media (max-width: 640px) {
   .about-page {
-    padding: 40px 16px 64px;
+    padding: 40px var(--marketing-gutter, 24px) 64px;
   }
 }
