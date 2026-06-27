@@ -1,8 +1,9 @@
 .auth-page {
-  min-height: 100vh;
-  padding: 24px;
+  min-height: calc(100vh - 200px);
+  padding: 24px 24px 48px;
   display: flex;
   justify-content: center;
+  background: linear-gradient(180deg, #ffffff 0%, #fff8f0 100%);
 }
 
 .auth-container {

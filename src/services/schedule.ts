@@ -171,6 +171,33 @@ export const scheduleService = {
     if (error) throw error
   },
 
+  async completeAllTasks(
+    householdId: string,
+    petId: string,
+    taskIds: string[],
+    date: Date,
+    userId: string,
+  ) {
+    if (taskIds.length === 0) return
+
+    const client = requireClient()
+    const completedAt = new Date().toISOString()
+    const dateKey = formatDateKey(date)
+    const rows = taskIds.map((taskId) => ({
+      household_id: householdId,
+      pet_id: petId,
+      task_id: taskId,
+      date: dateKey,
+      completed_by: userId,
+      completed_at: completedAt,
+    }))
+
+    const { error } = await client
+      .from('completions')
+      .upsert(rows, { onConflict: 'pet_id,task_id,date' })
+    if (error) throw error
+  },
+
   async uncompleteTask(
     householdId: string,
     petId: string,

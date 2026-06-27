@@ -135,3 +135,25 @@
 .tip-box p {
   margin: 0;
 }
+
+.mark-all-wrap {
+  max-width: 640px;
+  margin: 16px auto 0;
+}
+
+.mark-all-button {
+  width: 100%;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--header);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  color: var(--header);
+}
+
+.mark-all-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

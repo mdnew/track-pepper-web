@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 
 import { ErrorBanner } from '../components/ui'
 import { Logo } from '../components/Logo'
@@ -10,6 +10,7 @@ import './AuthPage.css'
 
 export function AuthPage() {
   const { refreshProfile } = useAuth()
+  const [searchParams] = useSearchParams()
   const [tab, setTab] = useState<'signin' | 'signup'>('signin')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -19,6 +20,12 @@ export function AuthPage() {
   const [signUpName, setSignUpName] = useState('')
   const [signUpEmail, setSignUpEmail] = useState('')
   const [signUpPassword, setSignUpPassword] = useState('')
+
+  useEffect(() => {
+    if (searchParams.get('tab') === 'signup') {
+      setTab('signup')
+    }
+  }, [searchParams])
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault()

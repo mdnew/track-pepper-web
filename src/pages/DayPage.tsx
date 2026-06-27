@@ -36,6 +36,7 @@ export function DayPage() {
   const [completions, setCompletions] = useState<Record<string, Completion>>({})
   const [loading, setLoading] = useState(true)
   const [loadingTasks, setLoadingTasks] = useState<Set<string>>(new Set())
+  const [markingAll, setMarkingAll] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const nowLineRef = useRef<HTMLDivElement>(null)
   const anchorRef = useRef<HTMLDivElement>(null)
@@ -207,9 +208,33 @@ export function DayPage() {
     }
   }
 
+  async function markAllCompleted() {
+    if (!profile?.householdId || !user || !selectedPetId || markingAll) return
+
+    const incompleteTaskIds = tasks
+      .filter((task) => completions[task.id] == null)
+      .map((task) => task.id)
+    if (incompleteTaskIds.length === 0) return
+
+    setMarkingAll(true)
+    try {
+      await scheduleService.completeAllTasks(
+        profile.householdId,
+        selectedPetId,
+        incompleteTaskIds,
+        date,
+        user.id,
+      )
+      await loadCompletions()
+    } finally {
+      setMarkingAll(false)
+    }
+  }
+
   const now = new Date()
   const nowIndex = currentTimeInsertIndex(tasks, now)
   const completedCount = Object.keys(completions).length
+  const allCompleted = tasks.length > 0 && completedCount >= tasks.length
   let currentSection: string | null = null
   let taskIndex = 0
 
@@ -304,6 +329,18 @@ export function DayPage() {
             <div className="tip-box">
               <strong>{plan.tipsTitle ?? 'Key Notes'}</strong>
               <p>{plan.tipsBody}</p>
+            </div>
+          )}
+          {tasks.length > 0 && (
+            <div className="mark-all-wrap">
+              <button
+                type="button"
+                className="mark-all-button"
+                onClick={markAllCompleted}
+                disabled={allCompleted || markingAll}
+              >
+                {markingAll ? 'Marking…' : 'Mark All Completed'}
+              </button>
             </div>
           )}
         </div>

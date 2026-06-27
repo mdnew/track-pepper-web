@@ -5,6 +5,7 @@ import { AnalyticsIdentity } from './components/AnalyticsIdentity'
 import { PageViewTracker } from './components/PageViewTracker'
 import { env } from './config/env'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { MarketingLayout } from './components/marketing/MarketingLayout'
 import { AuthPage } from './pages/AuthPage'
 import { CalendarPage } from './pages/CalendarPage'
 import { DayPage } from './pages/DayPage'
@@ -12,6 +13,9 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
 import { OnboardingPage } from './pages/OnboardingPage'
 import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { AboutPage } from './pages/marketing/AboutPage'
+import { HomePage } from './pages/marketing/HomePage'
+import { SchedulesPage } from './pages/marketing/SchedulesPage'
 
 function AppRoutes() {
   const { session, profile, loading, pendingPasswordRecovery } = useAuth()
@@ -30,8 +34,13 @@ function AppRoutes() {
   if (!session) {
     return (
       <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/auth" element={<Navigate to="/" replace />} />
+        <Route element={<MarketingLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/schedules" element={<SchedulesPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/login" element={<AuthPage />} />
+        </Route>
+        <Route path="/auth" element={<Navigate to="/login" replace />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

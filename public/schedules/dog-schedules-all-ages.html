@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dog Schedules by Age</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --cream: #FAF6EF;
+    --bark: #2E1F0F;
+    --bark-mid: #5C3D1E;
+    --amber: #C8791A;
+    --amber-light: #F5E4C8;
+    --slate: #4A5568;
+    --white: #FFFFFF;
+
+    --potty-bg: #EBF7F0; --potty-border: #3DA06B;
+    --feed-bg: #FEF3E2;  --feed-border: #C8791A;
+    --sleep-bg: #EEF2FF; --sleep-border: #5A78D1;
+    --play-bg: #F9F0FF;  --play-border: #9B59CC;
+    --train-bg: #FFF0EF; --train-border: #D95B4A;
+    --wind-bg: #F2F2F2;  --wind-border: #888;
+    --night-bg: #151220; --night-border: #5A78D1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--bark);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--bark);
+    padding: 28px 32px 24px;
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+  }
+
+  .site-header .icon { font-size: 38px; line-height: 1; }
+
+  .site-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+  }
+
+  .site-header p {
+    font-size: 12.5px;
+    color: var(--amber-light);
+    margin-top: 4px;
+    font-weight: 400;
+    opacity: 0.85;
+  }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    display: flex;
+    background: #1E1208;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 2px;
+    padding: 0 8px;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 12px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #9A7A58;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    letter-spacing: 0.3px;
+  }
+
+  .tab:hover { color: var(--amber-light); }
+
+  .tab.active {
+    color: var(--amber);
+    border-bottom-color: var(--amber);
+  }
+
+  /* ── Content panels ── */
+  .panel { display: none; padding: 24px 28px 32px; }
+  .panel.active { display: block; }
+
+  /* ── Stage intro ── */
+  .stage-intro {
+    display: flex;
+    gap: 14px;
+    background: var(--amber-light);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .stage-intro .emoji { font-size: 28px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+
+  .stage-intro h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--bark);
+    margin-bottom: 3px;
+  }
+
+  .stage-intro p {
+    font-size: 12.5px;
+    color: var(--bark-mid);
+    line-height: 1.55;
+  }
+
+  /* ── Section divider ── */
+  .divider {
+    text-align: center;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--amber);
+    padding: 10px 0 6px;
+  }
+
+  /* ── Schedule blocks ── */
+  .block {
+    display: grid;
+    grid-template-columns: 82px 34px 1fr;
+    align-items: center;
+    gap: 0 10px;
+    padding: 9px 13px;
+    border-radius: 10px;
+    border-left: 4px solid transparent;
+    margin-bottom: 5px;
+  }
+
+  .block.potty  { background: var(--potty-bg); border-color: var(--potty-border); }
+  .block.feed   { background: var(--feed-bg);  border-color: var(--feed-border); }
+  .block.sleep  { background: var(--sleep-bg); border-color: var(--sleep-border); }
+  .block.play   { background: var(--play-bg);  border-color: var(--play-border); }
+  .block.train  { background: var(--train-bg); border-color: var(--train-border); }
+  .block.wind   { background: var(--wind-bg);  border-color: var(--wind-border); }
+  .block.night  { background: var(--night-bg); border-color: var(--night-border); color: #D8D0FF; }
+
+  .time {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--bark-mid);
+    white-space: nowrap;
+    font-style: italic;
+  }
+  .block.night .time { color: #8880B8; }
+
+  .icon { font-size: 18px; text-align: center; }
+
+  .label strong {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+
+  .label span {
+    font-size: 11.5px;
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+
+  /* ── Tips box ── */
+  .tips {
+    margin-top: 18px;
+    border: 1.5px dashed var(--amber);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--bark-mid);
+    background: var(--white);
+  }
+  .tips strong { display: block; font-size: 13px; color: var(--bark); margin-bottom: 5px; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 16px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    color: var(--slate);
+  }
+  .dot {
+    width: 9px; height: 9px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .tab-bar { display: none; }
+    .panel { display: block !important; page-break-after: always; }
+    .site-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  @media (max-width: 480px) {
+    .site-header { padding: 20px 18px 16px; }
+    .panel { padding: 18px 16px 24px; }
+    .block { grid-template-columns: 72px 30px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="icon">🐾</div>
+  <div>
+    <h1>Dog Schedule by Age</h1>
+    <p>From newborn to senior — tap a stage to view its routine</p>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab(0)">🐣 Newborn<br><small style="font-weight:400;font-size:10px">0–8 wks</small></button>
+  <button class="tab" onclick="switchTab(1)">🍼 Young Pup<br><small style="font-weight:400;font-size:10px">8–12 wks</small></button>
+  <button class="tab" onclick="switchTab(2)">🌱 3–4 Months</button>
+  <button class="tab" onclick="switchTab(3)">🐕 4–6 Months</button>
+  <button class="tab" onclick="switchTab(4)">🦮 6–12 Months</button>
+  <button class="tab" onclick="switchTab(5)">🐶 Adult<br><small style="font-weight:400;font-size:10px">1–7 yrs</small></button>
+  <button class="tab" onclick="switchTab(6)">🦳 Senior<br><small style="font-weight:400;font-size:10px">7+ yrs</small></button>
+</div>
+
+<!-- ══ PANEL 0: Newborn ══ -->
+<div class="panel active" id="panel-0">
+  <div class="stage-intro">
+    <div class="emoji">🐣</div>
+    <div>
+      <h2>Newborn (0–8 weeks)</h2>
+      <p>This stage is entirely mom-led. Puppies are blind, deaf, and fully dependent. Your role is monitoring health, weight, and warmth — not scheduling. They nurse every 2 hours around the clock.</p>
+    </div>
+  </div>
+
+  <div class="divider">— Around the Clock (every 2 hrs) —</div>
+
+  <div class="block feed">
+    <div class="time">Every 2 hrs</div>
+    <div class="icon">🍼</div>
+    <div class="label"><strong>Nurse</strong><span>Mom feeds; orphaned pups need bottle feeding every 2 hrs, including overnight</span></div>
+  </div>
+
+  <div class="block sleep">
+    <div class="time">Between feeds</div>
+    <div class="icon">💤</div>
+    <div class="label"><strong>Sleep</strong><span>90% of the day — normal and essential for brain development</span></div>
+  </div>
+
+  <div class="divider">— Your Daily Tasks —</div>
+
+  <div class="block train">
+    <div class="time">2x daily</div>
+    <div class="icon">⚖️</div>
+    <div class="label"><strong>Weigh Each Pup</strong><span>Should gain 10–15% of birth weight per day. Flag any not gaining.</span></div>
+  </div>
+
+  <div class="block play">
+    <div class="time">Daily</div>
+    <div class="icon">🤲</div>
+    <div class="label"><strong>Gentle Handling</strong><span>Brief handling from day 3 onward helps socialization. Keep warm.</span></div>
+  </div>
+
+  <div class="block potty">
+    <div class="time">After each feed</div>
+    <div class="icon">🌿</div>
+    <div class="label"><strong>Stimulate Elimination</strong><span>If no mom: gently wipe belly/rear with warm damp cloth after every feeding</span></div>
+  </div>
+
+  <div class="block wind">
+    <div class="time">Always on</div>
+    <div class="icon">🌡️</div>
+    <div class="label"><strong>Monitor Temperature</strong><span>Whelping box: 85–90°F week 1, reduce 5° each week. Pups can't regulate body heat.</span></div>
+  </div>
+
+  <div class="divider">— Milestones to Watch —</div>
+
+  <div class="block sleep">
+    <div class="time">~Day 10</div>
+    <div class="icon">👀</div>
+    <div class="label"><strong>Eyes Open</strong><span>Vision is blurry at first — normal</span></div>
+  </div>
+
+  <div class="block sleep">
+    <div class="time">~Day 14</div>
+    <div class="icon">👂</div>
+    <div class="label"><strong>Ears Open</strong><span>Start reacting to sounds</span></div>
+  </div>
+
+  <div class="block play">
+    <div class="time">~Week 3</div>
+    <div class="icon">🐾</div>
+    <div class="label"><strong>Begin Socialization Window</strong><span>Introduce gentle sounds, varied surfaces, human touch</span></div>
+  </div>
+
+  <div class="block feed">
+    <div class="time">~Week 4</div>
+    <div class="icon">🍽️</div>
+    <div class="label"><strong>Begin Weaning</strong><span>Introduce moistened puppy food; still nursing</span></div>
+  </div>
+
+  <div class="tips">
+    <strong>🐣 Key Notes</strong>
+    If mom is present, let her do the work — your job is observation. Call your vet immediately if any pup is losing weight, crying constantly, rejected by mom, or feels cold to the touch. The socialization window (weeks 3–12) is the most critical period for a dog's entire life — exposure now shapes temperament forever.
+  </div>
+</div>
+
+<!-- ══ PANEL 1: 8–12 weeks ══ -->
+<div class="panel" id="panel-1">
+  <div class="stage-intro">
+    <div class="emoji">🍼</div>
+    <div>
+      <h2>Young Puppy (8–12 weeks)</h2>
+      <p>The classic "new puppy" stage. Awake windows are only 1–1.5 hrs. Expect overnight potty trips, 3 meals/day, and lots of crate naps.</p>
+    </div>
+  </div>
+
+  <div class="divider">— Morning —</div>
+  <div class="block potty"><div class="time">5:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Wake Up + Potty</strong><span>Outside immediately — no delay</span></div></div>
+  <div class="block feed"><div class="time">5:40 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #1</strong><span>Outside again within 10 min</span></div></div>
+  <div class="block play"><div class="time">6:00 AM</div><div class="icon">🧸</div><div class="label"><strong>Short Play</strong><span>5–10 min gentle play</span></div></div>
+  <div class="block sleep"><div class="time">6:30 AM</div><div class="icon">💤</div><div class="label"><strong>Nap in Crate</strong><span>~90 min</span></div></div>
+
+  <div class="divider">— Mid-Morning —</div>
+  <div class="block potty"><div class="time">8:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block train"><div class="time">8:10 AM</div><div class="icon">⭐</div><div class="label"><strong>Training</strong><span>5 min max — sit, name, recall</span></div></div>
+  <div class="block play"><div class="time">8:20 AM</div><div class="icon">🧸</div><div class="label"><strong>Explore / Socialize</strong><span>Sounds, surfaces, gentle handling</span></div></div>
+  <div class="block potty"><div class="time">8:50 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block sleep"><div class="time">9:00 AM</div><div class="icon">💤</div><div class="label"><strong>Nap in Crate</strong><span>~90 min</span></div></div>
+
+  <div class="divider">— Midday —</div>
+  <div class="block potty"><div class="time">10:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">10:40 AM</div><div class="icon">🧸</div><div class="label"><strong>Play + Short Training</strong></div></div>
+  <div class="block potty"><div class="time">11:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block feed"><div class="time">11:40 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #2</strong><span>Outside again within 10 min</span></div></div>
+  <div class="block sleep"><div class="time">12:00 PM</div><div class="icon">💤</div><div class="label"><strong>Long Midday Nap</strong><span>1.5–2 hrs in crate</span></div></div>
+
+  <div class="divider">— Afternoon —</div>
+  <div class="block potty"><div class="time">1:30 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">1:40 PM</div><div class="icon">🧸</div><div class="label"><strong>Play + Explore</strong></div></div>
+  <div class="block train"><div class="time">2:10 PM</div><div class="icon">⭐</div><div class="label"><strong>Training</strong><span>5 min max</span></div></div>
+  <div class="block sleep"><div class="time">2:30 PM</div><div class="icon">💤</div><div class="label"><strong>Nap</strong><span>~90 min</span></div></div>
+
+  <div class="divider">— Evening —</div>
+  <div class="block potty"><div class="time">4:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block feed"><div class="time">5:30 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #3</strong><span>Outside within 10 min after eating</span></div></div>
+  <div class="block play"><div class="time">6:00 PM</div><div class="icon">🧸</div><div class="label"><strong>Active Play</strong><span>Most energetic window</span></div></div>
+  <div class="block sleep"><div class="time">6:30 PM</div><div class="icon">💤</div><div class="label"><strong>Evening Nap</strong><span>~60–90 min</span></div></div>
+  <div class="block wind"><div class="time">8:00 PM</div><div class="icon">🕯️</div><div class="label"><strong>Wind Down</strong><span>Calm time, chew toy. Limit water after 8 PM.</span></div></div>
+  <div class="block potty"><div class="time">9:15 PM</div><div class="icon">🌿</div><div class="label"><strong>Last Potty</strong></div></div>
+  <div class="block sleep"><div class="time">9:30 PM</div><div class="icon">🌙</div><div class="label"><strong>Bedtime in Crate</strong></div></div>
+
+  <div class="divider">— Overnight —</div>
+  <div class="block night"><div class="time">~1:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Overnight Potty</strong><span>Quiet & calm. No play. Straight back to crate.</span></div></div>
+
+  <div class="tips">
+    <strong>🍼 Key Notes</strong>
+    Potty outside within 5–10 min of every meal, nap, and play session. Training sessions = 5 min max. Overnight trips should be boring on purpose — lights low, no talking. She'll drop the overnight trip around 4–5 months.
+  </div>
+</div>
+
+<!-- ══ PANEL 2: 3–4 months ══ -->
+<div class="panel" id="panel-2">
+  <div class="stage-intro">
+    <div class="emoji">🌱</div>
+    <div>
+      <h2>3–4 Months</h2>
+      <p>Awake windows stretch to ~2 hrs. Drop to 2 naps per day. Overnight potty trips become less frequent and may disappear entirely by month 4.</p>
+    </div>
+  </div>
+
+  <div class="divider">— Morning —</div>
+  <div class="block potty"><div class="time">5:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Wake Up + Potty</strong><span>Outside immediately</span></div></div>
+  <div class="block feed"><div class="time">5:40 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #1</strong><span>Outside again within 10 min</span></div></div>
+  <div class="block play"><div class="time">6:00 AM</div><div class="icon">🧸</div><div class="label"><strong>Play + Training</strong><span>10–15 min, more complex commands: down, stay, leave it</span></div></div>
+  <div class="block potty"><div class="time">7:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block sleep"><div class="time">8:00 AM</div><div class="icon">💤</div><div class="label"><strong>Morning Nap</strong><span>~1.5–2 hrs in crate</span></div></div>
+
+  <div class="divider">— Midday —</div>
+  <div class="block potty"><div class="time">10:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">10:10 AM</div><div class="icon">🧸</div><div class="label"><strong>Explore + Socialize</strong><span>Leash walks starting now — short and positive</span></div></div>
+  <div class="block train"><div class="time">11:00 AM</div><div class="icon">⭐</div><div class="label"><strong>Training Session</strong><span>10 min max</span></div></div>
+  <div class="block potty"><div class="time">11:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block feed"><div class="time">11:40 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #2</strong><span>Outside within 10 min</span></div></div>
+  <div class="block sleep"><div class="time">12:00 PM</div><div class="icon">💤</div><div class="label"><strong>Long Afternoon Nap</strong><span>2–2.5 hrs</span></div></div>
+
+  <div class="divider">— Afternoon —</div>
+  <div class="block potty"><div class="time">2:30 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">2:40 PM</div><div class="icon">🧸</div><div class="label"><strong>Active Play</strong><span>Fetch, tug, enrichment toys</span></div></div>
+  <div class="block train"><div class="time">3:30 PM</div><div class="icon">⭐</div><div class="label"><strong>Training Session</strong><span>10 min max</span></div></div>
+  <div class="block potty"><div class="time">4:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+
+  <div class="divider">— Evening —</div>
+  <div class="block feed"><div class="time">5:30 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #3</strong><span>Outside within 10 min</span></div></div>
+  <div class="block play"><div class="time">6:00 PM</div><div class="icon">🧸</div><div class="label"><strong>Evening Play</strong></div></div>
+  <div class="block potty"><div class="time">7:30 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block wind"><div class="time">8:30 PM</div><div class="icon">🕯️</div><div class="label"><strong>Wind Down</strong><span>Chew toy, calm time. Limit water after 8 PM.</span></div></div>
+  <div class="block potty"><div class="time">9:15 PM</div><div class="icon">🌿</div><div class="label"><strong>Last Potty</strong></div></div>
+  <div class="block sleep"><div class="time">9:30 PM</div><div class="icon">🌙</div><div class="label"><strong>Bedtime</strong></div></div>
+
+  <div class="divider">— Overnight —</div>
+  <div class="block night"><div class="time">~2:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Overnight Potty (if needed)</strong><span>Many pups drop this by 4 months — celebrate when it's gone!</span></div></div>
+
+  <div class="tips">
+    <strong>🌱 Key Notes</strong>
+    Start leash manners now — short, positive walks. Increase training complexity: down, stay, leave it, loose leash. Socialization window is closing — prioritize new people, dogs, and environments. Potty intervals can stretch to every 2–3 hrs during the day.
+  </div>
+</div>
+
+<!-- ══ PANEL 3: 4–6 months ══ -->
+<div class="panel" id="panel-3">
+  <div class="stage-intro">
+    <div class="emoji">🐕</div>
+    <div>
+      <h2>4–6 Months</h2>
+      <p>Most pups sleep through the night now. Awake windows hit 3 hrs. You can stay at 3 meals/day or begin transitioning to 2 — check with your vet.</p>
+    </div>
+  </div>
+
+  <div class="divider">— Morning —</div>
+  <div class="block potty"><div class="time">5:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Wake Up + Potty</strong></div></div>
+  <div class="block feed"><div class="time">5:45 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #1</strong><span>Outside within 15 min</span></div></div>
+  <div class="block play"><div class="time">6:15 AM</div><div class="icon">🧸</div><div class="label"><strong>Morning Walk or Play</strong><span>15–20 min leash walk</span></div></div>
+  <div class="block train"><div class="time">7:00 AM</div><div class="icon">⭐</div><div class="label"><strong>Training</strong><span>10–15 min — heel, place, impulse control</span></div></div>
+  <div class="block sleep"><div class="time">8:00 AM</div><div class="icon">💤</div><div class="label"><strong>Morning Rest</strong><span>Crate or settle — ~1.5 hrs</span></div></div>
+
+  <div class="divider">— Midday —</div>
+  <div class="block potty"><div class="time">10:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">10:15 AM</div><div class="icon">🧸</div><div class="label"><strong>Enrichment / Play</strong><span>Puzzle toys, sniff walks, fetch</span></div></div>
+  <div class="block feed"><div class="time">12:00 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #2 (if 3x/day)</strong><span>Outside within 15 min</span></div></div>
+  <div class="block sleep"><div class="time">12:30 PM</div><div class="icon">💤</div><div class="label"><strong>Midday Nap</strong><span>1.5–2 hrs</span></div></div>
+
+  <div class="divider">— Afternoon —</div>
+  <div class="block potty"><div class="time">2:30 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">2:45 PM</div><div class="icon">🧸</div><div class="label"><strong>Active Play</strong><span>Higher energy — fetch, tug, off-leash if safe</span></div></div>
+  <div class="block train"><div class="time">3:30 PM</div><div class="icon">⭐</div><div class="label"><strong>Training Session</strong><span>15 min max</span></div></div>
+  <div class="block potty"><div class="time">4:15 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+
+  <div class="divider">— Evening —</div>
+  <div class="block feed"><div class="time">5:30 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #3 (or Meal #2 if 2x/day)</strong><span>Outside within 15 min</span></div></div>
+  <div class="block play"><div class="time">6:00 PM</div><div class="icon">🧸</div><div class="label"><strong>Evening Walk</strong><span>20–30 min</span></div></div>
+  <div class="block potty"><div class="time">8:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block wind"><div class="time">8:30 PM</div><div class="icon">🕯️</div><div class="label"><strong>Wind Down</strong><span>Chew toy, calm settle</span></div></div>
+  <div class="block potty"><div class="time">9:15 PM</div><div class="icon">🌿</div><div class="label"><strong>Last Potty</strong></div></div>
+  <div class="block sleep"><div class="time">9:30 PM</div><div class="icon">🌙</div><div class="label"><strong>Bedtime — sleeping through the night 🎉</strong></div></div>
+
+  <div class="tips">
+    <strong>🐕 Key Notes</strong>
+    Overnight potty trips should be fully gone by now — celebrate! Adolescence begins around 5–6 months; expect some stubbornness and testing of boundaries. Stay consistent. Start working on recall, stay, and leave it in more distracting environments. Keep potty intervals to every 3 hrs max during the day.
+  </div>
+</div>
+
+<!-- ══ PANEL 4: 6–12 months ══ -->
+<div class="panel" id="panel-4">
+  <div class="stage-intro">
+    <div class="emoji">🦮</div>
+    <div>
+      <h2>6–12 Months</h2>
+      <p>Two meals/day. More physical exercise needed. Adolescence peaks around 6–9 months — training consistency matters more than ever. Crate becomes optional for settled dogs.</p>
+    </div>
+  </div>
+
+  <div class="divider">— Morning —</div>
+  <div class="block potty"><div class="time">5:30 AM</div><div class="icon">🌿</div><div class="label"><strong>Wake Up + Potty</strong></div></div>
+  <div class="block feed"><div class="time">5:45 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #1</strong><span>Outside within 15 min</span></div></div>
+  <div class="block play"><div class="time">6:15 AM</div><div class="icon">🧸</div><div class="label"><strong>Morning Walk</strong><span>20–30 min — leash manners practice</span></div></div>
+  <div class="block train"><div class="time">7:00 AM</div><div class="icon">⭐</div><div class="label"><strong>Training</strong><span>15 min — proofing commands in new environments</span></div></div>
+
+  <div class="divider">— Midday —</div>
+  <div class="block potty"><div class="time">11:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">11:15 AM</div><div class="icon">🧸</div><div class="label"><strong>Enrichment</strong><span>Puzzle feeder, sniff walk, playtime with another dog</span></div></div>
+  <div class="block sleep"><div class="time">12:00 PM</div><div class="icon">💤</div><div class="label"><strong>Rest Period</strong><span>Dog should be able to settle independently</span></div></div>
+
+  <div class="divider">— Afternoon —</div>
+  <div class="block potty"><div class="time">2:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">2:15 PM</div><div class="icon">🧸</div><div class="label"><strong>Active Exercise</strong><span>Fetch, running, off-leash park — burn that adolescent energy</span></div></div>
+  <div class="block train"><div class="time">3:30 PM</div><div class="icon">⭐</div><div class="label"><strong>Training Session</strong><span>15 min — advanced skills, impulse control, distraction proofing</span></div></div>
+  <div class="block potty"><div class="time">4:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+
+  <div class="divider">— Evening —</div>
+  <div class="block feed"><div class="time">5:30 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #2</strong><span>Outside within 15 min</span></div></div>
+  <div class="block play"><div class="time">6:00 PM</div><div class="icon">🧸</div><div class="label"><strong>Evening Walk</strong><span>30 min — sniff time matters for mental fatigue</span></div></div>
+  <div class="block potty"><div class="time">8:30 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block wind"><div class="time">9:00 PM</div><div class="icon">🕯️</div><div class="label"><strong>Wind Down</strong><span>Calm settle, chew toy or Kong</span></div></div>
+  <div class="block potty"><div class="time">9:15 PM</div><div class="icon">🌿</div><div class="label"><strong>Last Potty</strong></div></div>
+  <div class="block sleep"><div class="time">9:30 PM</div><div class="icon">🌙</div><div class="label"><strong>Bedtime</strong></div></div>
+
+  <div class="tips">
+    <strong>🦮 Key Notes</strong>
+    Adolescence is the hardest stretch — your pup may seem to "forget" training. Stay consistent and patient. Focus on real-world skills: greeting strangers politely, ignoring distractions on walks, staying calm at doors. Physical exercise + mental enrichment = a calmer dog. Potty intervals can now stretch to 4 hrs.
+  </div>
+</div>
+
+<!-- ══ PANEL 5: Adult ══ -->
+<div class="panel" id="panel-5">
+  <div class="stage-intro">
+    <div class="emoji">🐶</div>
+    <div>
+      <h2>Adult (1–7 years)</h2>
+      <p>Two meals/day, 2–3 walks/day, no forced nap schedule. Bladder holds 4–6 hours comfortably. Training shifts to maintenance and fun activities.</p>
+    </div>
+  </div>
+
+  <div class="divider">— Morning —</div>
+  <div class="block potty"><div class="time">6:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Morning Potty</strong></div></div>
+  <div class="block feed"><div class="time">6:15 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #1</strong></div></div>
+  <div class="block play"><div class="time">6:45 AM</div><div class="icon">🧸</div><div class="label"><strong>Morning Walk / Exercise</strong><span>30–60 min depending on breed energy level</span></div></div>
+
+  <div class="divider">— Midday —</div>
+  <div class="block potty"><div class="time">12:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Midday Potty</strong><span>Can extend to every 4–6 hrs for well-trained adults</span></div></div>
+  <div class="block play"><div class="time">12:15 PM</div><div class="icon">🧸</div><div class="label"><strong>Enrichment (optional)</strong><span>Kong, puzzle toy, brief training refresher</span></div></div>
+
+  <div class="divider">— Afternoon —</div>
+  <div class="block potty"><div class="time">4:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Afternoon Potty</strong></div></div>
+  <div class="block play"><div class="time">4:15 PM</div><div class="icon">🧸</div><div class="label"><strong>Afternoon Activity</strong><span>Walk, fetch, dog park, training games</span></div></div>
+
+  <div class="divider">— Evening —</div>
+  <div class="block feed"><div class="time">5:30 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #2</strong></div></div>
+  <div class="block play"><div class="time">6:00 PM</div><div class="icon">🧸</div><div class="label"><strong>Evening Walk</strong><span>30–45 min</span></div></div>
+  <div class="block potty"><div class="time">9:00 PM</div><div class="icon">🌿</div><div class="label"><strong>Last Potty</strong></div></div>
+  <div class="block sleep"><div class="time">9:30 PM</div><div class="icon">🌙</div><div class="label"><strong>Bedtime</strong><span>Crate optional — many adults settle freely</span></div></div>
+
+  <div class="tips">
+    <strong>🐶 Key Notes</strong>
+    Exercise needs vary hugely by breed — a Border Collie needs 2 hrs/day, a Basset Hound is happy with 30 min. Mental enrichment (sniff walks, training, puzzle toys) is just as tiring as physical exercise. Annual vet checkups are key at this stage. Keep training skills fresh with occasional refreshers.
+  </div>
+</div>
+
+<!-- ══ PANEL 6: Senior ══ -->
+<div class="panel" id="panel-6">
+  <div class="stage-intro">
+    <div class="emoji">🦳</div>
+    <div>
+      <h2>Senior (7+ years)</h2>
+      <p>Large breeds hit senior status around 6–7; small breeds around 10+. Shorter, gentler exercise. May need a midday potty trip back. Watch for joint stiffness, appetite changes, and cognitive signs.</p>
+    </div>
+  </div>
+
+  <div class="divider">— Morning —</div>
+  <div class="block potty"><div class="time">6:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Morning Potty</strong><span>May be more urgent — get outside promptly</span></div></div>
+  <div class="block feed"><div class="time">6:15 AM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #1</strong><span>Senior formula if vet recommends. Consider 3 smaller meals.</span></div></div>
+  <div class="block play"><div class="time">6:45 AM</div><div class="icon">🧸</div><div class="label"><strong>Gentle Morning Walk</strong><span>15–30 min, slow pace, let them sniff — sniffing is enrichment</span></div></div>
+  <div class="block sleep"><div class="time">8:00 AM</div><div class="icon">💤</div><div class="label"><strong>Rest</strong><span>Seniors sleep more — totally normal</span></div></div>
+
+  <div class="divider">— Midday —</div>
+  <div class="block potty"><div class="time">11:00 AM</div><div class="icon">🌿</div><div class="label"><strong>Midday Potty</strong><span>Bladder control weakens — add this trip back in</span></div></div>
+  <div class="block feed"><div class="time">12:00 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #2 (if 3x/day)</strong><span>Smaller meals are easier on digestion</span></div></div>
+  <div class="block play"><div class="time">12:30 PM</div><div class="icon">🧸</div><div class="label"><strong>Gentle Enrichment</strong><span>Sniff walk, easy puzzle toy, light play</span></div></div>
+  <div class="block sleep"><div class="time">1:30 PM</div><div class="icon">💤</div><div class="label"><strong>Afternoon Rest</strong></div></div>
+
+  <div class="divider">— Afternoon —</div>
+  <div class="block potty"><div class="time">3:30 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block play"><div class="time">3:45 PM</div><div class="icon">🧸</div><div class="label"><strong>Short Walk or Play</strong><span>Watch for limping, stiffness, or reluctance — ease off if needed</span></div></div>
+
+  <div class="divider">— Evening —</div>
+  <div class="block feed"><div class="time">5:30 PM</div><div class="icon">🍽️</div><div class="label"><strong>Meal #2 or #3</strong></div></div>
+  <div class="block play"><div class="time">6:00 PM</div><div class="icon">🧸</div><div class="label"><strong>Evening Stroll</strong><span>Gentle, unhurried — quality over quantity</span></div></div>
+  <div class="block potty"><div class="time">8:30 PM</div><div class="icon">🌿</div><div class="label"><strong>Potty Break</strong></div></div>
+  <div class="block wind"><div class="time">9:00 PM</div><div class="icon">🕯️</div><div class="label"><strong>Settle</strong><span>Orthopedic bed is worth the investment at this stage</span></div></div>
+  <div class="block potty"><div class="time">9:15 PM</div><div class="icon">🌿</div><div class="label"><strong>Last Potty</strong></div></div>
+  <div class="block sleep"><div class="time">9:30 PM</div><div class="icon">🌙</div><div class="label"><strong>Bedtime</strong></div></div>
+
+  <div class="tips">
+    <strong>🦳 Key Notes</strong>
+    Bi-annual vet visits are recommended for seniors (every 6 months). Watch for: increased drinking/urinating, appetite loss, confusion at night, difficulty rising, or incontinence. Joint supplements (fish oil, glucosamine) may help — ask your vet. Keep their brain active with easy nose work and gentle training. Love them loudly — they've earned it. 🐾
+  </div>
+</div>
+
+<!-- Legend -->
+<div style="padding: 0 28px 28px;">
+  <div class="legend">
+    <div class="legend-item"><div class="dot" style="background:var(--potty-border)"></div> Potty</div>
+    <div class="legend-item"><div class="dot" style="background:var(--feed-border)"></div> Feeding</div>
+    <div class="legend-item"><div class="dot" style="background:var(--sleep-border)"></div> Sleep / Rest</div>
+    <div class="legend-item"><div class="dot" style="background:var(--play-border)"></div> Play / Walk</div>
+    <div class="legend-item"><div class="dot" style="background:var(--train-border)"></div> Training</div>
+    <div class="legend-item"><div class="dot" style="background:var(--wind-border)"></div> Wind Down</div>
+  </div>
+</div>
+
+<script>
+  const panels = document.querySelectorAll('.panel');
+  const tabs = document.querySelectorAll('.tab');
+
+  function switchTab(idx) {
+    panels.forEach((p, i) => p.classList.toggle('active', i === idx));
+    tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+  }
+</script>
+</body>
+</html>
