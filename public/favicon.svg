@@ -1,14 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <style>
-    .bg {
-      fill: transparent;
-    }
-    @media (prefers-color-scheme: dark) {
-      .bg {
-        fill: #fffaf5;
-      }
-    }
-  </style>
-  <circle class="bg" cx="16" cy="16" r="16" />
-  <image href="/assets/logo-dog.png" x="4" y="2" width="24" height="26" preserveAspectRatio="xMidYMid meet" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <text y=".9em" font-size="90">🐶</text>
 </svg>
