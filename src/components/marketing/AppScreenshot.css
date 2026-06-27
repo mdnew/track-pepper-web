@@ -151,3 +151,15 @@
 .app-screenshot-block.done .label {
   text-decoration: line-through;
 }
+
+@media (max-width: 640px) {
+  .app-screenshot {
+    padding: 0;
+  }
+
+  .app-screenshot-frame {
+    width: min(100%, 248px);
+    border-radius: 28px;
+    padding: 10px;
+  }
+}

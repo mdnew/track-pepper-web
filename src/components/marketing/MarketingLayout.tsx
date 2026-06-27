@@ -13,7 +13,7 @@ export function MarketingLayout() {
           </Link>
           <nav className="marketing-nav" aria-label="Main">
             <NavLink to="/schedules">Schedules</NavLink>
-            <NavLink to="/about">About Us</NavLink>
+            <NavLink to="/about">About</NavLink>
             <NavLink to="/login">Login</NavLink>
           </nav>
         </div>

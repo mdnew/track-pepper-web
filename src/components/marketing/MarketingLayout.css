@@ -89,15 +89,27 @@
 
 @media (max-width: 640px) {
   .marketing-header-inner {
-    padding: 12px 16px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .marketing-nav {
+    gap: 2px;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   .marketing-nav a {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 10px;
+    font-size: 13px;
+    white-space: nowrap;
   }
 
   .logo-wordmark-brand {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+  }
+
+  .logo-wordmark-brand .logo-dog {
+    height: 1.2em;
   }
 }
