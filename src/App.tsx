@@ -19,9 +19,9 @@ import { HomePage } from './pages/marketing/HomePage'
 import { SchedulesPage } from './pages/marketing/SchedulesPage'
 
 function AppRoutes() {
-  const { session, profile, loading, pendingPasswordRecovery } = useAuth()
+  const { session, profile, loading, profileLoading, pendingPasswordRecovery } = useAuth()
 
-  if (loading) return <LoadingScreen />
+  if (loading || (session && profileLoading)) return <LoadingScreen />
 
   if (pendingPasswordRecovery && session) {
     return (

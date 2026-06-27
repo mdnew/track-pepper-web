@@ -18,6 +18,7 @@ interface AuthContextValue {
   user: User | null
   profile: Profile | null
   loading: boolean
+  profileLoading: boolean
   pendingPasswordRecovery: boolean
   refreshProfile: () => Promise<void>
   clearPasswordRecovery: () => void
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileLoading, setProfileLoading] = useState(false)
   const [pendingPasswordRecovery, setPendingPasswordRecovery] = useState(false)
 
   const refreshProfile = useCallback(async () => {
@@ -84,9 +86,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!session) {
       setProfile(null)
+      setProfileLoading(false)
       return
     }
-    refreshProfile().catch(() => setProfile(null))
+
+    let mounted = true
+    setProfileLoading(true)
+
+    refreshProfile()
+      .catch(() => {
+        if (mounted) setProfile(null)
+      })
+      .finally(() => {
+        if (mounted) setProfileLoading(false)
+      })
+
+    return () => {
+      mounted = false
+    }
   }, [session, refreshProfile])
 
   const value = useMemo(
@@ -95,13 +112,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: session?.user ?? null,
       profile,
       loading,
+      profileLoading,
       pendingPasswordRecovery,
       refreshProfile,
       clearPasswordRecovery: () => setPendingPasswordRecovery(false),
       setPasswordRecovery: setPendingPasswordRecovery,
       signOut,
     }),
-    [session, profile, loading, pendingPasswordRecovery, refreshProfile, signOut],
+    [session, profile, loading, profileLoading, pendingPasswordRecovery, refreshProfile, signOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

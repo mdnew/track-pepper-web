@@ -26,3 +26,15 @@
   outline: 2px solid var(--divider);
   outline-offset: 2px;
 }
+
+.pet-selector-label {
+  width: 100%;
+  border: 1px solid var(--intro-border);
+  background: var(--card);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}

@@ -7,9 +7,10 @@ import { MonthCalendar } from '../components/MonthCalendar'
 import { useAuth } from '../context/AuthContext'
 import { petsService } from '../services/pets'
 import { scheduleService } from '../services/schedule'
-import type { Pet } from '../types'
+import type { Pet, SchedulePlan } from '../types'
 import { applySpeciesTheme, speciesTheme } from '../theme/speciesTheme'
 import { resolveSelectedPetId, readSelectedPetId, writeSelectedPetId } from '../utils/petSelection'
+import { resolvePlanForPet } from '../utils/schedulePlan'
 import './CalendarPage.css'
 
 export function CalendarPage() {
@@ -24,6 +25,9 @@ export function CalendarPage() {
   const [completionCounts, setCompletionCounts] = useState<Map<string, number>>(
     new Map(),
   )
+  const [plansByPetId, setPlansByPetId] = useState<
+    Record<string, SchedulePlan | null>
+  >({})
   const [loading, setLoading] = useState(true)
 
   const selectedPet = pets.find((pet) => pet.id === selectedPetId) ?? null
@@ -53,10 +57,18 @@ export function CalendarPage() {
           )
         : new Map<string, number>()
 
+      const nextPlansByPetId = Object.fromEntries(
+        nextPets.map((householdPet) => [
+          householdPet.id,
+          resolvePlanForPet(nextPlans, householdPet),
+        ]),
+      )
+
       setPets(nextPets)
       setSelectedPetId(petId)
       setTaskCount(schedule.tasks.length)
       setCompletionCounts(counts)
+      setPlansByPetId(nextPlansByPetId)
     } finally {
       setLoading(false)
     }
@@ -91,6 +103,7 @@ export function CalendarPage() {
         <PetSelector
           pets={pets}
           selectedPetId={selectedPetId ?? ''}
+          plansByPetId={plansByPetId}
           onSelect={handlePetSelect}
         />
 

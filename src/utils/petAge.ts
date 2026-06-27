@@ -1,4 +1,5 @@
 import { formatDateKey, normalizeDate } from './formatDate'
+import type { SchedulePlan } from '../types'
 
 export function parseDateOfBirth(key: string): Date {
   return normalizeDate(new Date(`${key}T00:00:00`))
@@ -48,6 +49,27 @@ export function formatPetSummary(pet: {
   species: 'dog' | 'cat'
 }): string {
   return `${petSpeciesEmoji(pet.species)} ${pet.name} · ${formatPetAge(pet.dateOfBirth)}`
+}
+
+export function formatPlanPhaseLabel(plan: SchedulePlan): string {
+  const parenIndex = plan.name.indexOf(' (')
+  if (parenIndex !== -1) {
+    return plan.name.slice(0, parenIndex)
+  }
+  return plan.name
+}
+
+export function formatPetSummaryWithPlan(
+  pet: {
+    name: string
+    dateOfBirth: Date
+    species: 'dog' | 'cat'
+  },
+  plan: SchedulePlan | null,
+): string {
+  const summary = formatPetSummary(pet)
+  if (!plan) return summary
+  return `${summary} · ${plan.emoji} ${formatPlanPhaseLabel(plan)}`
 }
 
 export function formatPetsLine(
