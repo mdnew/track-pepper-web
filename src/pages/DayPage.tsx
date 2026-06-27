@@ -7,8 +7,6 @@ import {
   ScheduleBlock,
   SectionDivider,
 } from '../components/ScheduleBlock'
-import { Recommendations } from '../components/Recommendations'
-import { recommendationsForSpecies } from '../config/recommendations'
 import { useAuth } from '../context/AuthContext'
 import { petsService } from '../services/pets'
 import { scheduleService } from '../services/schedule'
@@ -47,7 +45,6 @@ export function DayPage() {
 
   const selectedPet = pets.find((pet) => pet.id === selectedPetId) ?? null
   const theme = speciesTheme(selectedPet?.species ?? 'dog')
-  const dayRecommendations = recommendationsForSpecies(selectedPet?.species)
 
   const loadCompletions = useCallback(async () => {
     if (!profile?.householdId || !dateParam || !selectedPetId) return
@@ -332,11 +329,6 @@ export function DayPage() {
             <div className="tip-box">
               <strong>{plan.tipsTitle ?? 'Key Notes'}</strong>
               <p>{plan.tipsBody}</p>
-            </div>
-          )}
-          {dayRecommendations.length > 0 && (
-            <div className="day-recommendations">
-              <Recommendations items={dayRecommendations} compact />
             </div>
           )}
           {tasks.length > 0 && (
