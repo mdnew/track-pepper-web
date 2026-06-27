@@ -21,7 +21,7 @@ export function HomePage() {
                 Sign Up — It&apos;s Free
               </Link>
               <Link to="/schedules" className="home-cta-secondary">
-                Browse schedules
+                Family pet schedules
               </Link>
             </div>
           </div>
@@ -37,7 +37,7 @@ export function HomePage() {
             <span className="home-feature-icon">📅</span>
             <h2>Age-based schedules</h2>
             <p>
-              Start with expert routines for puppies, kittens, and every life stage —
+              Start with expert routines for dogs and cats at every life stage —
               then customize for your pet.
             </p>
           </article>

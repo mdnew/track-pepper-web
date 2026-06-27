@@ -5,7 +5,7 @@ import { Logo } from '../Logo'
 import './MarketingLayout.css'
 
 const navLinks = [
-  { to: '/schedules', label: 'Schedules' },
+  { to: '/schedules', label: 'Family pet schedules' },
   { to: '/about', label: 'About' },
   { to: '/login', label: 'Login' },
 ] as const
