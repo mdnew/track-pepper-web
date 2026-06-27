@@ -7,9 +7,12 @@ import {
   EditableTextSetting,
 } from '../components/EditableSetting'
 import { PetsSection } from '../components/PetsSection'
+import { Recommendations } from '../components/Recommendations'
+import { recommendationsForPetSpeciesList } from '../config/recommendations'
 import { authService } from '../services/auth'
+import { petsService } from '../services/pets'
 import { useAuth } from '../context/AuthContext'
-import type { Household, Profile } from '../types'
+import type { Household, Pet, Profile } from '../types'
 import './SettingsPage.css'
 
 export function SettingsPage() {
@@ -17,6 +20,7 @@ export function SettingsPage() {
   const { user, signOut } = useAuth()
   const [household, setHousehold] = useState<Household | null>(null)
   const [members, setMembers] = useState<Profile[]>([])
+  const [pets, setPets] = useState<Pet[]>([])
   const [displayName, setDisplayName] = useState('')
   const [householdName, setHouseholdName] = useState('')
   const [loading, setLoading] = useState(true)
@@ -29,13 +33,15 @@ export function SettingsPage() {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const [p, h, m] = await Promise.all([
+      const [p, h, m, nextPets] = await Promise.all([
         authService.getProfile(),
         authService.getHousehold(),
         authService.getHouseholdMembers(),
+        petsService.getPets(),
       ])
       setHousehold(h)
       setMembers(m)
+      setPets(nextPets)
       setDisplayName(p?.displayName ?? '')
       setHouseholdName(h?.name ?? '')
     } finally {
@@ -107,6 +113,10 @@ export function SettingsPage() {
     navigator.clipboard.writeText(household.inviteCode)
     setMessage('Invite code copied!')
   }
+
+  const settingsRecommendations = recommendationsForPetSpeciesList(
+    pets.map((pet) => pet.species),
+  )
 
   return (
     <div className="page-with-header">
@@ -183,6 +193,12 @@ export function SettingsPage() {
                   onMessage={setMessage}
                   onError={(value) => setError(value || null)}
                 />
+              </section>
+            )}
+
+            {settingsRecommendations.length > 0 && (
+              <section className="settings-card">
+                <Recommendations items={settingsRecommendations} />
               </section>
             )}
 

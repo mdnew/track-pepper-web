@@ -24,7 +24,7 @@ export function MarketingLayout() {
       <footer className="marketing-footer">
         <div className="marketing-footer-inner">
           <Logo variant="brand" className="marketing-footer-logo" />
-          <p>Shared daily schedules for the whole family.</p>
+          <p>Shared daily schedules for dogs, cats, and the whole family.</p>
         </div>
       </footer>
     </div>

@@ -70,14 +70,6 @@ export function AuthPage() {
     <main className="auth-page">
       <div className="auth-container">
         <Logo variant="brand" className="auth-logo" />
-        <div className="auth-blurb">
-          <p>
-            A shared daily schedule for your puppy. Track feedings, potty breaks,
-            naps, and training as a family — check tasks off as you go and see
-            your progress on a calendar, synced in real time across phones and
-            the web.
-          </p>
-        </div>
 
         <div className="auth-tabs">
           <button

@@ -4,76 +4,10 @@
   min-height: calc(100vh - 72px);
 }
 
-.schedules-toolbar {
-  flex-shrink: 0;
-  background: #fff8f0;
-  border-bottom: 1px solid rgb(201 168 124 / 25%);
-}
-
-.schedules-toolbar-inner {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.schedules-toolbar-label {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #7a5c3c;
-}
-
-.schedules-species-toggle {
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  background: white;
-  border-radius: 999px;
-  border: 1px solid rgb(201 168 124 / 35%);
-}
-
-.schedules-species-toggle button {
-  border: none;
-  background: transparent;
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: #5c3d1e;
-  cursor: pointer;
-}
-
-.schedules-species-toggle button.active {
-  background: #3d2c1e;
-  color: white;
-}
-
 .schedules-frame {
   flex: 1;
   width: 100%;
   min-height: 720px;
   border: none;
   display: block;
-}
-
-@media (max-width: 640px) {
-  .schedules-toolbar-inner {
-    padding: 12px 16px;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .schedules-species-toggle {
-    width: 100%;
-  }
-
-  .schedules-species-toggle button {
-    flex: 1;
-  }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import './SchedulesPage.css'
 
@@ -12,33 +12,23 @@ const scheduleSources: Record<Species, string> = {
 export function SchedulesPage() {
   const [species, setSpecies] = useState<Species>('dog')
 
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return
+      if (event.data?.type !== 'schedules-species') return
+
+      const next = event.data.species
+      if (next === 'dog' || next === 'cat') {
+        setSpecies(next)
+      }
+    }
+
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [])
+
   return (
     <div className="schedules-page">
-      <div className="schedules-toolbar">
-        <div className="schedules-toolbar-inner">
-          <p className="schedules-toolbar-label">Reference schedules by age</p>
-          <div className="schedules-species-toggle" role="tablist" aria-label="Pet species">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={species === 'dog'}
-              className={species === 'dog' ? 'active' : ''}
-              onClick={() => setSpecies('dog')}
-            >
-              🐕 Dogs
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={species === 'cat'}
-              className={species === 'cat' ? 'active' : ''}
-              onClick={() => setSpecies('cat')}
-            >
-              🐈 Cats
-            </button>
-          </div>
-        </div>
-      </div>
       <iframe
         key={species}
         title={`${species === 'dog' ? 'Dog' : 'Cat'} schedules by age`}

@@ -55,6 +55,10 @@
   margin-bottom: 0;
 }
 
+.about-recommendations {
+  margin-top: 28px;
+}
+
 @media (max-width: 768px) {
   .about-inner {
     grid-template-columns: 1fr;

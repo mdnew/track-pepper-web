@@ -14,37 +14,7 @@
 .auth-logo {
   display: flex;
   justify-content: center;
-  margin: 0 0 8px;
-}
-
-.auth-container h1 {
-  text-align: center;
-  margin: 12px 0 4px;
-  font-size: 28px;
-  font-weight: 800;
-}
-
-.auth-subtitle {
-  text-align: center;
-  margin: 0 0 32px;
-  color: var(--header-subtitle);
-  font-size: 14px;
-}
-
-.auth-blurb {
   margin: 0 0 28px;
-  padding: 16px 18px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgb(44 26 14 / 6%);
-}
-
-.auth-blurb p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  text-align: center;
 }
 
 .auth-tabs {

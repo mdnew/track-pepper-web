@@ -9,12 +9,12 @@ export function HomePage() {
       <section className="home-hero">
         <div className="home-hero-inner">
           <div className="home-hero-copy">
-            <p className="home-eyebrow">For puppy parents &amp; the whole family</p>
+            <p className="home-eyebrow">For pet parents &amp; the whole family</p>
             <h1>Track your pet&apos;s day — together.</h1>
             <p className="home-lede">
-              A shared daily schedule for feedings, potty breaks, naps, and training.
-              Check tasks off as you go, see progress on a calendar, and stay synced
-              across phones and the web in real time.
+              A shared daily schedule for dogs and cats — feedings, care routines,
+              naps, and more. Check tasks off as you go, see progress on a calendar,
+              and stay synced across phones and the web in real time.
             </p>
             <div className="home-cta-row">
               <Link to="/login?tab=signup" className="home-cta-primary">
@@ -62,7 +62,7 @@ export function HomePage() {
 
       <section className="home-bottom-cta">
         <div className="home-bottom-cta-inner">
-          <h2>Ready to make puppy days easier?</h2>
+          <h2>Ready to make pet care easier?</h2>
           <p>Create a free account and invite your household in minutes.</p>
           <Link to="/login?tab=signup" className="home-cta-primary">
             Sign Up

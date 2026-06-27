@@ -10,7 +10,7 @@ export function AppScreenshot() {
             <span className="app-screenshot-back">‹</span>
             <div>
               <div className="app-screenshot-title">Today</div>
-              <div className="app-screenshot-subtitle">Young Puppy · 8–12 weeks</div>
+              <div className="app-screenshot-subtitle">Dogs &amp; cats · Every life stage</div>
             </div>
           </div>
           <div className="app-screenshot-progress">
