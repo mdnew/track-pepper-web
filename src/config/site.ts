@@ -3,7 +3,7 @@ const configuredSiteUrl = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '')
 export const SITE_NAME = 'TrackPepper'
 
 export const DEFAULT_DESCRIPTION =
-  'A shared daily schedule for your puppy or kitten. Check off feedings, potty breaks, naps, and training as a family — synced in real time across phones and the web.'
+  'A shared daily schedule for your puppy or kitten. Check off feedings, potty breaks, naps, and training as a family, synced in real time across phones and the web.'
 
 export const DEFAULT_OG_IMAGE = '/assets/pepper.jpg'
 

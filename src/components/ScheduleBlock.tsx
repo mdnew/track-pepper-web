@@ -81,7 +81,7 @@ export function ScheduleBlock({
 }
 
 export function SectionDivider({ label }: { label: string }) {
-  return <div className="section-divider">— {label} —</div>
+  return <div className="section-divider">{label}</div>
 }
 
 export function CurrentTimeLine({

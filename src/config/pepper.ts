@@ -1,4 +1,4 @@
-/** Pepper's birthday — used only on the marketing About page. */
+/** Pepper's birthday, used only on the marketing About page. */
 export const PEPPER_BIRTHDAY = new Date(2026, 3, 14)
 
 /** e.g. "10-week-old", "5-month-old" for About page copy */

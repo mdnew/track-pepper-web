@@ -10,15 +10,15 @@ export function HomePage() {
         <div className="home-hero-inner">
           <div className="home-hero-copy">
             <p className="home-eyebrow">For pet parents &amp; the whole family</p>
-            <h1>Track your pet&apos;s day — together.</h1>
+            <h1>Track your pet&apos;s day together.</h1>
             <p className="home-lede">
-              A shared daily schedule for dogs and cats — feedings, care routines,
+              A shared daily schedule for dogs and cats: feedings, care routines,
               naps, and more. Check tasks off as you go, see progress on a calendar,
               and stay synced across phones and the web in real time.
             </p>
             <div className="home-cta-row">
               <Link to="/login?tab=signup" className="home-cta-primary">
-                Sign Up — It&apos;s Free
+                Sign Up, It&apos;s Free
               </Link>
               <Link to="/schedules" className="home-cta-secondary">
                 Family pet schedules
@@ -37,7 +37,7 @@ export function HomePage() {
             <span className="home-feature-icon">📅</span>
             <h2>Age-based schedules</h2>
             <p>
-              Start with expert routines for dogs and cats at every life stage —
+              Start with expert routines for dogs and cats at every life stage,
               then customize for your pet.
             </p>
           </article>
@@ -45,7 +45,7 @@ export function HomePage() {
             <span className="home-feature-icon">👨‍👩‍👧</span>
             <h2>Built for households</h2>
             <p>
-              Mom, Dad, kids — everyone sees the same plan and knows what&apos;s done
+              Mom, Dad, kids: everyone sees the same plan and knows what&apos;s done
               already.
             </p>
           </article>

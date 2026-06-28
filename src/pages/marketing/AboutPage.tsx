@@ -26,7 +26,7 @@ export function AboutPage() {
               TrackPepper as a way to help my whole family take care of her.
             </p>
             <p>
-              Yes, I used AI to help me — and so can you! But with my background in
+              Yes, I used AI to help me, and so can you! But with my background in
               technology I thought it might be easier to just share what I built so
               other families could use it too!
             </p>

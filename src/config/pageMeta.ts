@@ -16,7 +16,7 @@ const LOGIN_DESCRIPTION =
 export function resolvePageMeta(pathname: string): PageMetaConfig {
   if (pathname === '/') {
     return {
-      title: 'Track your pet\'s day — together',
+      title: 'Track your pet\'s day together',
       description: DEFAULT_DESCRIPTION,
       path: '/',
     }
@@ -26,7 +26,7 @@ export function resolvePageMeta(pathname: string): PageMetaConfig {
     return {
       title: 'Reference schedules by age',
       description:
-        'Browse expert daily routines for dogs and cats at every life stage — from newborn puppies and kittens through senior pets.',
+        'Browse expert daily routines for dogs and cats at every life stage, from newborn puppies and kittens through senior pets.',
       path: '/schedules',
     }
   }

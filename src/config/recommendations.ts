@@ -12,7 +12,7 @@ export interface Recommendation {
 }
 
 export const AFFILIATE_DISCLOSURE =
-  'Some links are Amazon affiliate links — we may earn a small commission at no extra cost to you.'
+  'Some links are Amazon affiliate links. We may earn a small commission at no extra cost to you.'
 
 export const recommendations: Recommendation[] = [
   {
@@ -28,7 +28,7 @@ export const recommendations: Recommendation[] = [
     id: 'nerf-fetch-ball',
     title: 'Nerf Dog Trackshot Ball',
     description:
-      'The squeaky fetch ball Pepper loves — lightweight, durable, and easy to spot in the yard.',
+      'The squeaky fetch ball Pepper loves: lightweight, durable, and easy to spot in the yard.',
     href: 'https://amzn.to/4akJsgf',
     species: 'dog',
     category: 'gear',
@@ -37,7 +37,7 @@ export const recommendations: Recommendation[] = [
     id: 'jasonwell-dog-pool',
     title: 'Jasonwell Foldable Dog Pool',
     description:
-      'The 79" splash pool Pepper loves — folds flat for storage, no inflation needed, great for backyard cool-offs.',
+      'The 79" splash pool Pepper loves: folds flat for storage, no inflation needed, great for backyard cool-offs.',
     href: 'https://amzn.to/4f6TGn3',
     species: 'dog',
     category: 'gear',
@@ -46,7 +46,7 @@ export const recommendations: Recommendation[] = [
     id: 'bene-bac-probiotic',
     title: 'PetAg Bene-Bac Probiotic',
     description:
-      'The probiotic powder we use to help keep Pepper regular — useful after diet changes, antibiotics, or travel.',
+      'The probiotic powder we use to help keep Pepper regular, useful after diet changes, antibiotics, or travel.',
     href: 'https://amzn.to/4wc4LJh',
     species: 'dog',
     category: 'care',

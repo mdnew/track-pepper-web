@@ -55,16 +55,16 @@ export function PrivacyPage() {
           </p>
           <ul>
             <li>
-              <strong>Supabase</strong> — authentication, database, and real-time sync
+              <strong>Supabase</strong>: authentication, database, and real-time sync
             </li>
             <li>
-              <strong>Google Analytics</strong> — website usage analytics
+              <strong>Google Analytics</strong>: website usage analytics
             </li>
             <li>
-              <strong>Firebase Analytics</strong> — mobile app usage analytics
+              <strong>Firebase Analytics</strong>: mobile app usage analytics
             </li>
             <li>
-              <strong>Netlify</strong> — website hosting
+              <strong>Netlify</strong>: website hosting
             </li>
           </ul>
           <p>
