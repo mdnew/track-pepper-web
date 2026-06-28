@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns'
 
-import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_NAME } from './site'
+import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_ALT, SITE_NAME } from './site'
 
 export interface PageMetaConfig {
   title: string
@@ -122,4 +122,11 @@ export function formatDocumentTitle(title: string): string {
 
 export function resolveOgImage(image?: string): string {
   return image ?? DEFAULT_OG_IMAGE
+}
+
+export function resolveOgImageAlt(image?: string): string {
+  if (image === '/assets/pepper.jpg') {
+    return 'Pepper, the black lab puppy TrackPepper is named after'
+  }
+  return DEFAULT_OG_IMAGE_ALT
 }

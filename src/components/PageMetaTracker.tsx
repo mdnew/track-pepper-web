@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import {
   formatDocumentTitle,
   resolveOgImage,
+  resolveOgImageAlt,
   resolvePageMeta,
 } from '../config/pageMeta'
 import { absoluteUrl, getSiteUrl, SITE_NAME } from '../config/site'
@@ -61,6 +62,7 @@ export function PageMetaTracker() {
     const documentTitle = formatDocumentTitle(meta.title)
     const description = meta.description
     const imagePath = resolveOgImage(meta.image)
+    const imageAlt = resolveOgImageAlt(meta.image)
     const pagePath = meta.path ?? pathname
     const pageUrl = absoluteUrl(pagePath)
     const imageUrl = absoluteUrl(imagePath)
@@ -73,12 +75,12 @@ export function PageMetaTracker() {
     setMeta('property', 'og:title', documentTitle)
     setMeta('property', 'og:description', description)
     setMeta('property', 'og:image', imageUrl)
-    setMeta('property', 'og:image:alt', 'Pepper, the black lab puppy TrackPepper is named after')
+    setMeta('property', 'og:image:alt', imageAlt)
     setMeta('name', 'twitter:card', 'summary_large_image')
     setMeta('name', 'twitter:title', documentTitle)
     setMeta('name', 'twitter:description', description)
     setMeta('name', 'twitter:image', imageUrl)
-    setMeta('name', 'twitter:image:alt', 'Pepper, the black lab puppy TrackPepper is named after')
+    setMeta('name', 'twitter:image:alt', imageAlt)
 
     if (pageUrl) {
       setMeta('property', 'og:url', pageUrl)
