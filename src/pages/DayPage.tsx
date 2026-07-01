@@ -275,7 +275,7 @@ export function DayPage() {
 
   const now = new Date()
   const nowIndex = currentTimeInsertIndex(tasks, now)
-  const completedCount = Object.keys(completions).length
+  const completedCount = tasks.filter((task) => completions[task.id] != null).length
   const allCompleted = tasks.length > 0 && completedCount >= tasks.length
   let currentSection: string | null = null
   let taskIndex = 0
