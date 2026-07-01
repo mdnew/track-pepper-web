@@ -1,5 +1,14 @@
 .day-layout-top {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.day-layout-top .pet-selector {
+  padding: 0 max(16px, env(safe-area-inset-right)) 0
+    max(16px, env(safe-area-inset-left));
 }
 
 .back-button {
@@ -24,7 +33,7 @@
 
 .progress-banner {
   flex-shrink: 0;
-  margin: 8px max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+  margin: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
   padding: 16px;
   background: var(--card);
   border-radius: 16px;

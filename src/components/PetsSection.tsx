@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { EditIconButton } from './EditableSetting'
+import { ConfirmDialog } from './ConfirmDialog'
 import { petsService } from '../services/pets'
+import { scheduleService } from '../services/schedule'
 import type { Pet, PetSpecies } from '../types'
 import {
   formatDateOfBirth,
@@ -17,6 +20,16 @@ type PetDraft = {
 }
 
 const emptyDraft = (): PetDraft => ({ name: '', dateOfBirth: '', species: 'dog' })
+
+type PetScheduleInfo = {
+  label: string
+  taskCount: number | null
+}
+
+function formatScheduleLine(info: PetScheduleInfo): string {
+  if (info.taskCount == null) return info.label
+  return `${info.label} · ${info.taskCount} tasks`
+}
 
 function SpeciesPicker({
   value,
@@ -54,6 +67,7 @@ function PetCard({
   editing,
   saving,
   deleting,
+  scheduleInfo,
   onEdit,
   onCancel,
   onUpdateDraft,
@@ -65,6 +79,7 @@ function PetCard({
   editing: boolean
   saving: boolean
   deleting: boolean
+  scheduleInfo: PetScheduleInfo
   onEdit: () => void
   onCancel: () => void
   onUpdateDraft: (patch: Partial<PetDraft>) => void
@@ -79,13 +94,28 @@ function PetCard({
     return (
       <li className="pet-card">
         <div className="pet-card-readonly">
-          <div>
-            <p className="pet-summary">{formatPetSummary(pet)}</p>
-            <p className="pet-dob">
-              Born {formatDateOfBirth(pet.dateOfBirth)}
-            </p>
+          <div className="pet-card-row">
+            <div>
+              <p className="pet-summary">{formatPetSummary(pet)}</p>
+              <p className="pet-dob">
+                Born {formatDateOfBirth(pet.dateOfBirth)}
+              </p>
+            </div>
+            <EditIconButton label={`Edit ${pet.name}`} onClick={onEdit} />
           </div>
-          <EditIconButton label={`Edit ${pet.name}`} onClick={onEdit} />
+          <div className="pet-card-schedule">
+            <span className="pet-schedule-summary">
+              {formatScheduleLine(scheduleInfo)}
+            </span>
+            {scheduleInfo.taskCount != null && (
+              <Link
+                to={`/settings/schedule/${pet.id}`}
+                className="pet-schedule-edit-link"
+              >
+                Edit Schedule
+              </Link>
+            )}
+          </div>
         </div>
       </li>
     )
@@ -113,8 +143,8 @@ function PetCard({
             value={draft.dateOfBirth}
             onChange={(e) => onUpdateDraft({ dateOfBirth: e.target.value })}
           />
+          {previewAge && <span className="pet-dob-hint">{previewAge}</span>}
         </label>
-        {previewAge && <p className="pet-age">{previewAge}</p>}
       </div>
       <div className="editable-setting-actions">
         <button
@@ -136,11 +166,11 @@ function PetCard({
       </div>
       <button
         type="button"
-        className="btn-text-danger pet-remove-btn"
+        className="btn-outline btn-outline-danger pet-remove-btn"
         disabled={saving || deleting}
         onClick={onRemove}
       >
-        {deleting ? 'Removing…' : 'Remove pet'}
+        Remove pet
       </button>
     </li>
   )
@@ -148,14 +178,21 @@ function PetCard({
 
 export function PetsSection({
   embedded = false,
+  householdId,
+  canManagePets = true,
   onMessage,
   onError,
 }: {
   embedded?: boolean
+  householdId?: string | null
+  canManagePets?: boolean
   onMessage: (message: string) => void
   onError: (message: string) => void
 }) {
   const [pets, setPets] = useState<Pet[]>([])
+  const [scheduleSummaries, setScheduleSummaries] = useState<
+    Record<string, PetScheduleInfo>
+  >({})
   const [drafts, setDrafts] = useState<Record<string, PetDraft>>({})
   const [newPet, setNewPet] = useState<PetDraft>(emptyDraft())
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -163,13 +200,41 @@ export function PetsSection({
   const [loading, setLoading] = useState(true)
   const [savingId, setSavingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [removeConfirmPetId, setRemoveConfirmPetId] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const nextPets = await petsService.getPets()
+      const [nextPets, plans] = await Promise.all([
+        petsService.getPets(householdId),
+        scheduleService.getPlans(),
+      ])
+      const summaries: Record<string, PetScheduleInfo> = {}
+      for (const pet of nextPets) {
+        const meta = await scheduleService.getPetScheduleMeta(pet.id)
+        if (meta?.isCustomized) {
+          const tasks = await scheduleService.getCustomTasksForPet(pet.id)
+          summaries[pet.id] = {
+            label: 'Custom schedule',
+            taskCount: tasks.length,
+          }
+        } else {
+          const schedule = await scheduleService.getScheduleForPet(
+            pet,
+            plans,
+            new Date(),
+          )
+          summaries[pet.id] = schedule.plan
+            ? {
+                label: `${schedule.plan.emoji} ${schedule.plan.name}`,
+                taskCount: schedule.tasks.length,
+              }
+            : { label: 'No schedule yet', taskCount: null }
+        }
+      }
       setPets(nextPets)
+      setScheduleSummaries(summaries)
       setDrafts(
         Object.fromEntries(
           nextPets.map((pet) => [
@@ -186,7 +251,7 @@ export function PetsSection({
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [householdId])
 
   useEffect(() => {
     load()
@@ -253,13 +318,12 @@ export function PetsSection({
     }
   }
 
-  async function removePet(id: string) {
-    if (!window.confirm('Remove this pet from your household?')) return
-
+  async function confirmRemovePet(id: string) {
     setDeletingId(id)
     onError('')
     try {
       await petsService.deletePet(id)
+      setRemoveConfirmPetId(null)
       await load()
       onMessage('Pet removed.')
     } catch (err) {
@@ -267,6 +331,10 @@ export function PetsSection({
     } finally {
       setDeletingId(null)
     }
+  }
+
+  function requestRemovePet(id: string) {
+    setRemoveConfirmPetId(id)
   }
 
   async function addPet(e: React.FormEvent) {
@@ -279,7 +347,12 @@ export function PetsSection({
     setAdding(true)
     onError('')
     try {
-      await petsService.createPet(newPet.name, newPet.dateOfBirth, newPet.species)
+      await petsService.createPet(
+        newPet.name,
+        newPet.dateOfBirth,
+        newPet.species,
+        householdId,
+      )
       setNewPet(emptyDraft())
       setShowAddForm(false)
       await load()
@@ -346,18 +419,25 @@ export function PetsSection({
                 editing={editingId === pet.id}
                 saving={savingId === pet.id}
                 deleting={deletingId === pet.id}
+                scheduleInfo={
+                  scheduleSummaries[pet.id] ?? {
+                    label: 'No schedule yet',
+                    taskCount: null,
+                  }
+                }
                 onEdit={() => startEdit(pet.id)}
                 onCancel={() => cancelEdit(pet.id)}
                 onUpdateDraft={(patch) => updateDraft(pet.id, patch)}
                 onSave={() => savePet(pet.id)}
-                onRemove={() => removePet(pet.id)}
+                onRemove={() => requestRemovePet(pet.id)}
               />
             )
           })}
         </ul>
       )}
 
-      {showAddForm ? (
+      {canManagePets && (
+        showAddForm ? (
         <form
           className={`add-pet-form${embedded ? ' add-pet-form-embedded' : ''}`}
           onSubmit={addPet}
@@ -387,6 +467,11 @@ export function PetsSection({
                 setNewPet((prev) => ({ ...prev, dateOfBirth: e.target.value }))
               }
             />
+            {newPet.dateOfBirth && (
+              <span className="pet-dob-hint">
+                {formatPetAge(new Date(`${newPet.dateOfBirth}T00:00:00`))}
+              </span>
+            )}
           </label>
           <div className="editable-setting-actions">
             <button
@@ -402,21 +487,57 @@ export function PetsSection({
             </button>
           </div>
         </form>
-      ) : (
-        <button
-          type="button"
-          className="btn-outline add-pet-button"
-          onClick={() => setShowAddForm(true)}
-        >
-          Add pet
-        </button>
+        ) : (
+          <button
+            type="button"
+            className="btn-outline add-pet-button"
+            onClick={() => setShowAddForm(true)}
+          >
+            Add pet
+          </button>
+        )
       )}
     </>
   )
 
+  const removeConfirmPet = pets.find((pet) => pet.id === removeConfirmPetId)
+
+  const removeDialog = (
+    <ConfirmDialog
+      open={removeConfirmPetId != null}
+      title="Remove pet?"
+      message={
+        removeConfirmPet
+          ? `${removeConfirmPet.name} will be removed from your household, including their schedule and completion history.`
+          : ''
+      }
+      confirmLabel="Remove pet"
+      confirmingLabel="Removing…"
+      confirming={deletingId === removeConfirmPetId}
+      onCancel={() => {
+        if (!deletingId) setRemoveConfirmPetId(null)
+      }}
+      onConfirm={() => {
+        if (removeConfirmPetId) {
+          confirmRemovePet(removeConfirmPetId).catch(() => undefined)
+        }
+      }}
+    />
+  )
+
   if (embedded) {
-    return <div className="household-subsection">{content}</div>
+    return (
+      <div className="household-subsection">
+        {content}
+        {removeDialog}
+      </div>
+    )
   }
 
-  return <section className="settings-card">{content}</section>
+  return (
+    <section className="settings-card">
+      {content}
+      {removeDialog}
+    </section>
+  )
 }

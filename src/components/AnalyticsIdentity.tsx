@@ -8,8 +8,8 @@ export function AnalyticsIdentity() {
 
   useEffect(() => {
     setAnalyticsUser(user?.id ?? null, {
-      has_household: profile?.householdId ? 'true' : 'false',
-      household_id: profile?.householdId ?? undefined,
+      has_household: profile?.activeHouseholdId || profile?.householdId ? 'true' : 'false',
+      household_id: profile?.activeHouseholdId ?? profile?.householdId ?? undefined,
     })
   }, [user?.id, profile?.householdId])
 

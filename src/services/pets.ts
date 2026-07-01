@@ -22,28 +22,36 @@ function mapPet(row: Record<string, unknown>): Pet {
   }
 }
 
-async function requireHouseholdId(): Promise<string> {
+async function requireHouseholdId(householdId?: string | null): Promise<string> {
+  if (householdId) return householdId
+
   const profile = await authService.getProfile()
-  if (!profile?.householdId) throw new Error('Not in a household')
-  return profile.householdId
+  const resolved = authService.resolveActiveHouseholdId(profile)
+  if (!resolved) throw new Error('Not in a household')
+  return resolved
 }
 
 export const petsService = {
-  async getPets(): Promise<Pet[]> {
-    const householdId = await requireHouseholdId()
+  async getPets(householdId?: string | null): Promise<Pet[]> {
+    const resolvedHouseholdId = await requireHouseholdId(householdId)
     const client = requireClient()
     const { data, error } = await client
       .from('pets')
       .select()
-      .eq('household_id', householdId)
+      .eq('household_id', resolvedHouseholdId)
       .order('name')
 
     if (error) throw error
     return (data ?? []).map(mapPet)
   },
 
-  async createPet(name: string, dateOfBirth: string, species: PetSpecies) {
-    const householdId = await requireHouseholdId()
+  async createPet(
+    name: string,
+    dateOfBirth: string,
+    species: PetSpecies,
+    householdId?: string | null,
+  ) {
+    const resolvedHouseholdId = await requireHouseholdId(householdId)
     const trimmed = name.trim()
     if (!trimmed) throw new Error('Pet name is required.')
 
@@ -51,7 +59,7 @@ export const petsService = {
     const { data, error } = await client
       .from('pets')
       .insert({
-        household_id: householdId,
+        household_id: resolvedHouseholdId,
         name: trimmed,
         date_of_birth: dateOfBirth,
         species,

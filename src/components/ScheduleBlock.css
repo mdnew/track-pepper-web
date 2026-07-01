@@ -44,9 +44,49 @@
 }
 
 .schedule-check {
+  flex-shrink: 0;
   width: 44px;
   display: flex;
   justify-content: center;
+}
+
+.schedule-check:has(.schedule-actions) {
+  width: auto;
+}
+
+.schedule-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.schedule-edit-btn {
+  padding: 6px 10px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 8px;
+  background: white;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--header);
+  cursor: pointer;
+}
+
+.schedule-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgb(245 107 107 / 35%);
+  border-radius: 8px;
+  background: white;
+  color: var(--train);
+  cursor: pointer;
+}
+
+.schedule-delete-btn:hover {
+  background: var(--train-bg);
 }
 
 .schedule-check input[type='checkbox'] {

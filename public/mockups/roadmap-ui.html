@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TrackPepper — Roadmap UI Mockups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #FAF6EF;
+      --card: #FFFFFF;
+      --header: #2E1F0F;
+      --header-sub: #F5E4C8;
+      --text: #2E1F0F;
+      --text-muted: #5C3D1E;
+      --divider: #C8791A;
+      --accent: #3DA06B;
+      --accent-bg: #EBF7F0;
+      --danger: #C0392B;
+      --border: #E8DFD0;
+      --radius: 12px;
+      --phone-w: 390px;
+      --phone-h: 844px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: #1a1510;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .page-header {
+      max-width: 1200px;
+      margin: 0 auto 24px;
+      color: #F5E4C8;
+    }
+
+    .page-header h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .page-header p {
+      font-size: 0.9rem;
+      opacity: 0.75;
+      max-width: 640px;
+      line-height: 1.5;
+    }
+
+    .nav-tabs {
+      max-width: 1200px;
+      margin: 0 auto 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .nav-tabs button {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #4a3d30;
+      background: #2a2218;
+      color: #F5E4C8;
+      cursor: pointer;
+    }
+
+    .nav-tabs button.active {
+      background: #C8791A;
+      border-color: #C8791A;
+      color: #fff;
+    }
+
+    .nav-tabs button:hover:not(.active) {
+      background: #3a3024;
+    }
+
+    .layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      background: var(--bg);
+      border-radius: 40px;
+      overflow: hidden;
+      border: 8px solid #111;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #111;
+      border-radius: 0 0 16px 16px;
+      z-index: 10;
+    }
+
+    .screen {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .screen.active { display: flex; }
+
+    .app-header {
+      background: var(--header);
+      color: var(--header-sub);
+      padding: 48px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .app-header h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .app-header .back {
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      color: var(--header-sub);
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .app-header .settings-btn {
+      background: none;
+      border: none;
+      color: var(--header-sub);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+    }
+
+    .header-brand {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .selector-block {
+      margin-bottom: 12px;
+    }
+
+    .selector-dropdown {
+      width: 100%;
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--card)
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235C3D1E' d='M1 1l5 5 5-5'/%3E%3C/svg%3E")
+        no-repeat right 14px center;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 40px 12px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .selector-dropdown:focus {
+      outline: 2px solid var(--divider);
+      outline-offset: 2px;
+    }
+
+    .pets-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .calendar-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .month-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .month-header h2 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.1rem;
+    }
+
+    .month-nav {
+      background: var(--accent-bg);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .day-cell:hover { background: var(--accent-bg); }
+
+    .day-cell.today .day-num {
+      background: var(--header);
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .ring {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2.5px solid var(--accent-bg);
+      border-top-color: var(--accent);
+      border-right-color: var(--accent);
+    }
+
+    .ring.partial {
+      border-top-color: var(--accent);
+      border-right-color: var(--accent-bg);
+    }
+
+    .ring.empty {
+      border-color: var(--border);
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    .pet-selector-block {
+      margin-bottom: 12px;
+    }
+
+    .progress-banner {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--accent-bg);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 67%;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--divider);
+      margin: 16px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .task-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .task-check.done {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .task-time {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 52px;
+    }
+
+    .task-title { font-weight: 600; font-size: 0.9rem; }
+    .task-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    .settings-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .settings-section h2 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .settings-section h3 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin: 16px 0 8px;
+    }
+
+    .settings-section h3:first-of-type { margin-top: 0; }
+
+    .field-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .field-value {
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .invite-box {
+      font-family: monospace;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      background: var(--accent-bg);
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--header);
+      color: #fff;
+      border-color: var(--header);
+    }
+
+    .btn-danger {
+      color: var(--danger);
+      border-color: #f0d0cc;
+      background: #fdf5f4;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .member-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .member-row:last-child { border-bottom: none; }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .member-info { flex: 1; }
+    .member-name { font-weight: 600; font-size: 0.9rem; }
+    .member-meta { font-size: 0.75rem; color: var(--text-muted); }
+
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .badge.guest { background: #fef3e2; color: #a0620a; }
+
+    .remove-link {
+      font-size: 0.75rem;
+      color: var(--danger);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .pet-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .pet-card-header {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .schedule-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--accent-bg);
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    .schedule-row span { font-size: 0.85rem; }
+
+    .editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 48px 16px 12px;
+      background: var(--header);
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .editor-header h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .editor-header .reset {
+      font-size: 0.75rem;
+      color: #f5a898;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .edit-task {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .edit-task-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .edit-time {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--divider);
+    }
+
+    .edit-cat {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .edit-field {
+      font-size: 0.85rem;
+      padding: 6px 8px;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      margin-top: 4px;
+      color: var(--text-muted);
+    }
+
+    .fab {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .notes-panel {
+      flex: 1;
+      min-width: 280px;
+      max-width: 400px;
+      color: #F5E4C8;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .notes-panel h2 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .notes-panel ul {
+      padding-left: 18px;
+      opacity: 0.85;
+    }
+
+    .notes-panel li { margin-bottom: 6px; }
+
+    .notes-panel .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #3a3024;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>TrackPepper roadmap mockups</h1>
+    <p>Planned UI for Calendar, Day, Settings, and schedule editing. Use the tabs to switch screens. Household and pet switchers use the same dropdown pattern as the app today.</p>
+  </div>
+
+  <nav class="nav-tabs" id="tabs">
+    <button type="button" class="active" data-screen="calendar">Calendar</button>
+    <button type="button" data-screen="day">Day view</button>
+    <button type="button" data-screen="settings">Settings</button>
+    <button type="button" data-screen="editor">Schedule editor</button>
+  </nav>
+
+  <div class="layout">
+    <div class="phone">
+      <div class="phone-notch"></div>
+
+      <div class="screen active" id="screen-calendar">
+        <header class="app-header">
+          <span class="header-brand">TrackPepper</span>
+          <button type="button" class="settings-btn">Settings</button>
+        </header>
+        <div class="scroll-body">
+          <div class="selector-block">
+            <select class="selector-dropdown" aria-label="Select household">
+              <option selected>Home</option>
+              <option>Partner's place</option>
+              <option disabled>Mom's (guest · expired)</option>
+            </select>
+          </div>
+          <p class="pets-subtitle">Pepper · Mochi</p>
+          <div class="calendar-card">
+            <div class="month-header">
+              <button type="button" class="month-nav">‹</button>
+              <h2>March 2026</h2>
+              <button type="button" class="month-nav">›</button>
+            </div>
+            <div class="weekdays">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="days-grid">
+              <div class="day-cell"><span class="day-num">1</span><div class="ring partial"></div></div>
+              <div class="day-cell"><span class="day-num">2</span><div class="ring"></div></div>
+              <div class="day-cell today"><span class="day-num">3</span><div class="ring partial"></div></div>
+              <div class="day-cell"><span class="day-num">4</span><div class="ring empty"></div></div>
+              <div class="day-cell"><span class="day-num">5</span><div class="ring empty"></div></div>
+              <div class="day-cell"><span class="day-num">6</span><div class="ring"></div></div>
+              <div class="day-cell"><span class="day-num">7</span><div class="ring partial"></div></div>
+              <div class="day-cell"><span class="day-num">8</span><div class="ring"></div></div>
+              <div class="day-cell"><span class="day-num">9</span><div class="ring partial"></div></div>
+              <div class="day-cell"><span class="day-num">10</span><div class="ring"></div></div>
+              <div class="day-cell"><span class="day-num">11</span><div class="ring empty"></div></div>
+              <div class="day-cell"><span class="day-num">12</span><div class="ring empty"></div></div>
+              <div class="day-cell"><span class="day-num">13</span><div class="ring partial"></div></div>
+              <div class="day-cell"><span class="day-num">14</span><div class="ring"></div></div>
+            </div>
+            <p class="hint">Tap a day to view and check off tasks</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen" id="screen-day">
+        <header class="app-header">
+          <button type="button" class="back">‹</button>
+          <h1>Friday, March 14</h1>
+          <div style="width:48px"></div>
+        </header>
+        <div class="scroll-body">
+          <div class="pet-selector-block">
+            <select class="selector-dropdown" aria-label="Select pet">
+              <option selected>Pepper · Young Puppy</option>
+              <option>Mochi · Kitten</option>
+            </select>
+          </div>
+          <div class="progress-banner">
+            <div class="progress-row">
+              <span>Today's progress</span>
+              <span><strong>8 / 12</strong></span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+          </div>
+          <div class="section-label">Morning</div>
+          <div class="task-row">
+            <div class="task-check done"></div>
+            <span class="task-time">7:00</span>
+            <div><div class="task-title">Feed</div><div class="task-sub">Breakfast — 1/2 cup kibble</div></div>
+          </div>
+          <div class="task-row">
+            <div class="task-check"></div>
+            <span class="task-time">8:00</span>
+            <div><div class="task-title">Potty break</div><div class="task-sub">Outside, praise on success</div></div>
+          </div>
+          <div class="section-label">Afternoon</div>
+          <div class="task-row">
+            <div class="task-check done"></div>
+            <span class="task-time">12:30</span>
+            <div><div class="task-title">Feed</div><div class="task-sub">Lunch — 1/2 cup kibble</div></div>
+          </div>
+          <div class="task-row">
+            <div class="task-check"></div>
+            <span class="task-time">3:00</span>
+            <div><div class="task-title">Play & training</div><div class="task-sub">10 min fetch, 5 min sit/stay</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen" id="screen-settings">
+        <header class="app-header">
+          <button type="button" class="back">‹</button>
+          <h1>Profile & Household</h1>
+          <div style="width:24px"></div>
+        </header>
+        <div class="scroll-body">
+          <div class="settings-section">
+            <h2>Household</h2>
+            <div class="field-label">Household name</div>
+            <div class="field-value">Home</div>
+            <div class="field-label">Invite code</div>
+            <div class="invite-box">PEPPER-K7M2</div>
+            <button type="button" class="btn">Copy invite code</button>
+
+            <h3>Family members</h3>
+            <div class="member-row">
+              <div class="avatar">M</div>
+              <div class="member-info">
+                <div class="member-name">Meg (You) <span class="badge">Owner</span></div>
+              </div>
+            </div>
+            <div class="member-row">
+              <div class="avatar">M</div>
+              <div class="member-info">
+                <div class="member-name">Matt <span class="badge">Member</span></div>
+              </div>
+              <button type="button" class="remove-link">Remove</button>
+            </div>
+
+            <h3>Guests</h3>
+            <div class="member-row">
+              <div class="avatar">A</div>
+              <div class="member-info">
+                <div class="member-name">Alex <span class="badge guest">Guest</span></div>
+                <div class="member-meta">Mar 10–17 · Tue, Thu · Active</div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary" style="width:100%; margin-top:8px;">+ Invite guest</button>
+            <button type="button" class="btn btn-danger">Leave household</button>
+          </div>
+
+          <div class="settings-section">
+            <h2>Pets</h2>
+            <div class="pet-card">
+              <div class="pet-card-header">Pepper · Dog · 4 months</div>
+              <div class="schedule-row">
+                <span>Schedule: Young Puppy (24 tasks)</span>
+                <button type="button" class="btn btn-primary" style="padding:6px 12px; font-size:0.8rem;">Edit</button>
+              </div>
+            </div>
+            <div class="pet-card">
+              <div class="pet-card-header">Mochi · Cat · 8 weeks</div>
+              <div class="schedule-row">
+                <span>Schedule: Custom (18 tasks)</span>
+                <button type="button" class="btn btn-primary" style="padding:6px 12px; font-size:0.8rem;">Edit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen" id="screen-editor">
+        <div class="editor-header">
+          <button type="button" class="back" style="color:#fff;background:none;border:none;font-size:1.5rem;cursor:pointer;">‹</button>
+          <h1>Edit Pepper's schedule</h1>
+          <button type="button" class="reset">Reset</button>
+        </div>
+        <div class="scroll-body" style="padding-bottom: 72px;">
+          <div class="section-label">Morning</div>
+          <div class="edit-task">
+            <div class="edit-task-top">
+              <span class="edit-time">7:00 AM</span>
+              <span class="edit-cat">Feed</span>
+            </div>
+            <div class="task-title">Feed</div>
+            <div class="edit-field">Breakfast — 1/2 cup kibble</div>
+            <button type="button" class="remove-link" style="margin-top:8px;">Delete item</button>
+          </div>
+          <div class="edit-task">
+            <div class="edit-task-top">
+              <span class="edit-time">8:00 AM</span>
+              <span class="edit-cat">Potty</span>
+            </div>
+            <div class="task-title">Potty break</div>
+            <div class="edit-field">Outside, praise on success</div>
+            <button type="button" class="remove-link" style="margin-top:8px;">Delete item</button>
+          </div>
+          <div class="section-label">Afternoon</div>
+          <div class="edit-task">
+            <div class="edit-task-top">
+              <span class="edit-time">12:30 PM</span>
+              <span class="edit-cat">Feed</span>
+            </div>
+            <div class="task-title">Feed</div>
+            <div class="edit-field">Lunch — 1/2 cup kibble</div>
+            <button type="button" class="remove-link" style="margin-top:8px;">Delete item</button>
+          </div>
+        </div>
+        <button type="button" class="fab">+ Add item</button>
+      </div>
+
+    </div>
+
+    <aside class="notes-panel" id="notes">
+      <h2>Calendar</h2>
+      <ul>
+        <li><span class="tag">M0</span>Aggregated progress rings = all pets combined</li>
+        <li><span class="tag">M0</span>Pet names as subtitle, not a picker</li>
+        <li><span class="tag">Phase 1</span>Household dropdown, same pattern as pet selector</li>
+        <li>Hidden when user belongs to only one household</li>
+      </ul>
+    </aside>
+  </div>
+
+  <script>
+    const tabs = document.getElementById('tabs');
+    const notes = document.getElementById('notes');
+
+    const noteContent = {
+      calendar: `<h2>Calendar</h2><ul>
+        <li><span class="tag">M0</span>Aggregated progress rings = all pets combined</li>
+        <li><span class="tag">M0</span>Pet names as subtitle, not a picker</li>
+        <li><span class="tag">Phase 1</span>Household dropdown, same pattern as pet selector</li>
+        <li>Hidden when user belongs to only one household</li>
+      </ul>`,
+      day: `<h2>Day view</h2><ul>
+        <li><span class="tag">M0</span>Pet dropdown below date header</li>
+        <li>Progress banner is per-pet only</li>
+        <li>Household fixed — go back to Calendar to switch</li>
+        <li>Check off tasks (read-only schedule structure)</li>
+      </ul>`,
+      settings: `<h2>Settings</h2><ul>
+        <li><span class="tag">Phase 1</span>Family members with roles, remove, leave</li>
+        <li><span class="tag">Phase 2</span>Guests subsection with dates + invite</li>
+        <li><span class="tag">Phase 3</span>Per-pet schedule summary + Edit button</li>
+      </ul>`,
+      editor: `<h2>Schedule editor</h2><ul>
+        <li><span class="tag">Phase 3</span>Entry from Settings → Pets → Edit</li>
+        <li>Edit time, description, delete items</li>
+        <li>+ Add item picks category type</li>
+        <li>Reset to default in header</li>
+        <li>Saved to pet in Supabase</li>
+      </ul>`,
+    };
+
+    tabs.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-screen]');
+      if (!btn) return;
+      const id = btn.dataset.screen;
+      tabs.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + id).classList.add('active');
+      notes.innerHTML = noteContent[id] || '';
+    });
+  </script>
+</body>
+</html>

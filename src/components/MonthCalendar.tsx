@@ -16,7 +16,7 @@ import './MonthCalendar.css'
 interface Props {
   focusedMonth: Date
   completionCounts: Map<string, number>
-  totalTasks: number
+  dayTotals: Map<string, number>
   onMonthChange: (month: Date) => void
   onDaySelect: (day: Date) => void
 }
@@ -31,7 +31,7 @@ function formatKey(date: Date): string {
 export function MonthCalendar({
   focusedMonth,
   completionCounts,
-  totalTasks,
+  dayTotals,
   onMonthChange,
   onDaySelect,
 }: Props) {
@@ -83,9 +83,10 @@ export function MonthCalendar({
       <div className="month-grid">
         {days.map((day) => {
           const key = formatKey(day)
-          const completed = completionCounts.get(key) ?? 0
           const isToday = isSameDay(day, today)
           const isOutside = !isSameMonth(day, focusedMonth)
+          const completed = completionCounts.get(key) ?? 0
+          const total = dayTotals.get(key) ?? 0
 
           return (
             <button
@@ -106,7 +107,7 @@ export function MonthCalendar({
               >
                 {day.getDate()}
               </span>
-              <CompletionIndicator completed={completed} total={totalTasks} size={26} />
+              <CompletionIndicator completed={completed} total={total} size={20} compact />
             </button>
           )
         })}

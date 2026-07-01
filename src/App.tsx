@@ -13,6 +13,7 @@ import { DayPage } from './pages/DayPage'
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
 import { OnboardingPage } from './pages/OnboardingPage'
 import { ResetPasswordPage } from './pages/ResetPasswordPage'
+import { ScheduleEditorPage } from './pages/ScheduleEditorPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { AboutPage } from './pages/marketing/AboutPage'
 import { HomePage } from './pages/marketing/HomePage'
@@ -21,7 +22,14 @@ import { SchedulesPage } from './pages/marketing/SchedulesPage'
 import { TermsPage } from './pages/marketing/TermsPage'
 
 function AppRoutes() {
-  const { session, profile, loading, profileLoading, pendingPasswordRecovery } = useAuth()
+  const {
+    session,
+    activeHouseholdId,
+    memberships,
+    loading,
+    profileLoading,
+    pendingPasswordRecovery,
+  } = useAuth()
 
   if (loading || (session && profileLoading)) return <LoadingScreen />
 
@@ -53,7 +61,7 @@ function AppRoutes() {
     )
   }
 
-  if (!profile?.householdId) {
+  if (memberships.length === 0 && !activeHouseholdId) {
     return (
       <Routes>
         <Route path="/onboarding" element={<OnboardingPage />} />
@@ -67,6 +75,7 @@ function AppRoutes() {
       <Route path="/" element={<CalendarPage />} />
       <Route path="/day/:date" element={<DayPage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/settings/schedule/:petId" element={<ScheduleEditorPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />

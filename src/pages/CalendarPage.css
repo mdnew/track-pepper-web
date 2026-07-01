@@ -33,3 +33,11 @@
   color: var(--text-secondary);
   margin: 12px 0 4px;
 }
+
+.calendar-pets-subtitle {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}

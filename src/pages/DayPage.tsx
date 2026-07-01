@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
+import { PetSelector } from '../components/PetSelector'
 import {
   CurrentTimeLine,
   ScheduleBlock,
@@ -9,30 +10,43 @@ import {
 } from '../components/ScheduleBlock'
 import { useAuth } from '../context/AuthContext'
 import { petsService } from '../services/pets'
-import { scheduleService } from '../services/schedule'
+import {
+  getScheduleRevision,
+  scheduleService,
+  subscribeScheduleRevision,
+} from '../services/schedule'
 import type { Completion, Pet, SchedulePlan, ScheduleTask } from '../types'
 import { applySpeciesTheme, speciesTheme } from '../theme/speciesTheme'
 import { isSameCalendarDay, parseDateKey, formatDateKey } from '../utils/formatDate'
 import { trackTaskComplete } from '../utils/analytics'
-import { resolveSelectedPetId, writeSelectedPetId } from '../utils/petSelection'
+import {
+  readSelectedPetId,
+  resolveSelectedPetId,
+  writeSelectedPetId,
+} from '../utils/petSelection'
 import {
   currentTimeInsertIndex,
   sortTasksChronologically,
 } from '../utils/scheduleTime'
+import { resolvePlanForPet } from '../utils/schedulePlan'
 import './DayPage.css'
 
 export function DayPage() {
   const { date: dateParam } = useParams<{ date: string }>()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { profile, user } = useAuth()
+  const { activeHouseholdId, user, currentRole } = useAuth()
   const date = dateParam ? parseDateKey(dateParam) : new Date()
   const isToday = isSameCalendarDay(date, new Date())
+  const isGuest = currentRole === 'guest'
 
   const [pets, setPets] = useState<Pet[]>([])
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null)
   const [plan, setPlan] = useState<SchedulePlan | null>(null)
   const [tasks, setTasks] = useState<ScheduleTask[]>([])
+  const [plansByPetId, setPlansByPetId] = useState<
+    Record<string, SchedulePlan | null>
+  >({})
   const [completions, setCompletions] = useState<Record<string, Completion>>({})
   const [loading, setLoading] = useState(true)
   const [loadingTasks, setLoadingTasks] = useState<Set<string>>(new Set())
@@ -42,19 +56,26 @@ export function DayPage() {
   const anchorRef = useRef<HTMLDivElement>(null)
   const hasScrolledRef = useRef(false)
   const loadGenerationRef = useRef(0)
+  const [scheduleRevision, setScheduleRevision] = useState(getScheduleRevision)
 
   const selectedPet = pets.find((pet) => pet.id === selectedPetId) ?? null
   const theme = speciesTheme(selectedPet?.species ?? 'dog')
 
   const loadCompletions = useCallback(async () => {
-    if (!profile?.householdId || !dateParam || !selectedPetId) return
+    if (!activeHouseholdId || !dateParam || !selectedPetId) return
     const rows = await scheduleService.getCompletionsForDate(
-      profile.householdId,
+      activeHouseholdId,
       selectedPetId,
       parseDateKey(dateParam),
     )
     setCompletions(Object.fromEntries(rows.map((c) => [c.taskId, c])))
-  }, [profile?.householdId, dateParam, selectedPetId])
+  }, [activeHouseholdId, dateParam, selectedPetId])
+
+  useEffect(() => {
+    return subscribeScheduleRevision(() => {
+      setScheduleRevision(getScheduleRevision())
+    })
+  }, [])
 
   useEffect(() => {
     hasScrolledRef.current = false
@@ -73,7 +94,7 @@ export function DayPage() {
   }, [])
 
   useEffect(() => {
-    if (!profile?.householdId || !dateParam) return
+    if (!activeHouseholdId || !dateParam) return
 
     let channel: ReturnType<typeof scheduleService.subscribeToCompletions> | null =
       null
@@ -88,15 +109,29 @@ export function DayPage() {
       try {
         const day = parseDateKey(dateParam)
         const [nextPets, nextPlans] = await Promise.all([
-          petsService.getPets(),
+          petsService.getPets(activeHouseholdId),
           scheduleService.getPlans(),
         ])
         if (loadGeneration !== loadGenerationRef.current) return
 
         setPets(nextPets)
+        setPlansByPetId(
+          Object.fromEntries(
+            nextPets.map((householdPet) => [
+              householdPet.id,
+              resolvePlanForPet(nextPlans, householdPet, day),
+            ]),
+          ),
+        )
 
-        const petId = resolveSelectedPetId(nextPets, petQuery)
-        if (petId) writeSelectedPetId(petId)
+        const storedPetId = readSelectedPetId(activeHouseholdId)
+        const petId = resolveSelectedPetId(
+          nextPets,
+          petQuery ?? storedPetId,
+        )
+        if (petId && activeHouseholdId) {
+          writeSelectedPetId(activeHouseholdId, petId)
+        }
         setSelectedPetId(petId)
 
         const pet = nextPets.find((item) => item.id === petId) ?? null
@@ -110,14 +145,14 @@ export function DayPage() {
 
         if (petId) {
           const rows = await scheduleService.getCompletionsForDate(
-            profile!.householdId!,
+            activeHouseholdId!,
             petId,
             day,
           )
           if (loadGeneration !== loadGenerationRef.current) return
           setCompletions(Object.fromEntries(rows.map((c) => [c.taskId, c])))
           channel = scheduleService.subscribeToCompletions(
-            profile!.householdId!,
+            activeHouseholdId!,
             petId,
             day,
             () => {
@@ -139,7 +174,7 @@ export function DayPage() {
     return () => {
       channel?.unsubscribe()
     }
-  }, [profile?.householdId, dateParam, searchParams.get('pet'), loadCompletions])
+  }, [activeHouseholdId, dateParam, searchParams.get('pet'), loadCompletions, scheduleRevision])
 
   useEffect(() => {
     if (!isToday || loading || hasScrolledRef.current || !scrollRef.current) {
@@ -171,13 +206,20 @@ export function DayPage() {
     return () => cancelAnimationFrame(frame)
   }, [isToday, loading, tasks.length, dateParam, selectedPetId])
 
+  function handlePetSelect(petId: string) {
+    if (!activeHouseholdId) return
+    setSelectedPetId(petId)
+    writeSelectedPetId(activeHouseholdId, petId)
+    setSearchParams({ pet: petId }, { replace: true })
+  }
+
   async function toggleTask(task: ScheduleTask, completed: boolean) {
-    if (!profile?.householdId || !user || !selectedPetId) return
+    if (!activeHouseholdId || !user || !selectedPetId) return
     setLoadingTasks((prev) => new Set(prev).add(task.id))
     try {
       if (completed) {
         await scheduleService.completeTask(
-          profile.householdId,
+          activeHouseholdId,
           selectedPetId,
           task.id,
           date,
@@ -192,7 +234,7 @@ export function DayPage() {
         })
       } else {
         await scheduleService.uncompleteTask(
-          profile.householdId,
+          activeHouseholdId,
           selectedPetId,
           task.id,
           date,
@@ -209,7 +251,7 @@ export function DayPage() {
   }
 
   async function markAllCompleted() {
-    if (!profile?.householdId || !user || !selectedPetId || markingAll) return
+    if (!activeHouseholdId || !user || !selectedPetId || markingAll) return
 
     const incompleteTaskIds = tasks
       .filter((task) => completions[task.id] == null)
@@ -219,7 +261,7 @@ export function DayPage() {
     setMarkingAll(true)
     try {
       await scheduleService.completeAllTasks(
-        profile.householdId,
+        activeHouseholdId,
         selectedPetId,
         incompleteTaskIds,
         date,
@@ -290,6 +332,15 @@ export function DayPage() {
           <div className="header-spacer" />
         </header>
 
+        {!loading && (
+          <PetSelector
+            pets={pets}
+            selectedPetId={selectedPetId ?? ''}
+            plansByPetId={plansByPetId}
+            onSelect={handlePetSelect}
+          />
+        )}
+
         {!loading && pets.length === 0 && (
           <div className="empty-pets-banner">
             Add a pet in Settings to see an age-appropriate schedule.
@@ -331,7 +382,7 @@ export function DayPage() {
               <p>{plan.tipsBody}</p>
             </div>
           )}
-          {tasks.length > 0 && (
+          {tasks.length > 0 && !isGuest && (
             <div className="mark-all-wrap">
               <button
                 type="button"

@@ -13,8 +13,9 @@ export function HomePage() {
             <h1>Track your pet&apos;s day together.</h1>
             <p className="home-lede">
               A shared daily schedule for dogs and cats: feedings, care routines,
-              naps, and more. Check tasks off as you go, see progress on a calendar,
-              and stay synced across phones and the web in real time.
+              naps, and more. Customize each pet&apos;s plan, manage multiple
+              households, invite guest sitters, and stay synced across phones and
+              the web in real time.
             </p>
             <div className="home-cta-row">
               <Link to="/login?tab=signup" className="home-cta-primary">
@@ -37,8 +38,8 @@ export function HomePage() {
             <span className="home-feature-icon">📅</span>
             <h2>Age-based schedules</h2>
             <p>
-              Start with expert routines for dogs and cats at every life stage,
-              then customize for your pet.
+              Expert routines for dogs and cats at every life stage, from newborn
+              through senior — a solid starting point for any pet.
             </p>
           </article>
           <article className="home-feature">
@@ -57,13 +58,37 @@ export function HomePage() {
               the whole family.
             </p>
           </article>
+          <article className="home-feature">
+            <span className="home-feature-icon">✏️</span>
+            <h2>Custom schedules</h2>
+            <p>
+              Start from age-based expert routines, then edit times, meals, and
+              notes for your pet. Changes apply every day — including today.
+            </p>
+          </article>
+          <article className="home-feature">
+            <span className="home-feature-icon">🏠</span>
+            <h2>Multiple households</h2>
+            <p>
+              Keep separate plans for home, grandparents, or a second location.
+              Switch households in one tap without juggling extra accounts.
+            </p>
+          </article>
+          <article className="home-feature">
+            <span className="home-feature-icon">🧑‍🍼</span>
+            <h2>Guest sitters</h2>
+            <p>
+              Invite a sitter or dog walker with limited access — set the dates
+              and days they can view and check off tasks.
+            </p>
+          </article>
         </div>
       </section>
 
       <section className="home-bottom-cta">
         <div className="home-bottom-cta-inner">
           <h2>Ready to make pet care easier?</h2>
-          <p>Create a free account and invite your household in minutes.</p>
+          <p>Create a free account, invite your household, or add a guest sitter in minutes.</p>
           <Link to="/login?tab=signup" className="home-cta-primary">
             Sign Up
           </Link>

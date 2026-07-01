@@ -5,12 +5,19 @@ interface Props {
   completed: number
   total: number
   size?: number
+  /** Hide the count label — use on small calendar cells. */
+  compact?: boolean
 }
 
-export function CompletionIndicator({ completed, total, size = 32 }: Props) {
+export function CompletionIndicator({
+  completed,
+  total,
+  size = 32,
+  compact = false,
+}: Props) {
   const ratio = total === 0 ? 0 : completed / total
 
-  if (completed === 0) {
+  if (total === 0) {
     return (
       <div
         className="completion-indicator empty"
@@ -58,7 +65,7 @@ export function CompletionIndicator({ completed, total, size = 32 }: Props) {
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </svg>
-      <span className="completion-count">{completed}</span>
+      {completed > 0 && !compact && <span className="completion-count">{completed}</span>}
     </div>
   )
 }

@@ -1,0 +1,36 @@
+.time-label-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.time-label-input input {
+  padding: 12px 14px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--text-primary);
+  background: white;
+}
+
+.time-label-input input[type='time'] {
+  appearance: none;
+  min-height: 46px;
+}
+
+.time-label-input input.input-invalid {
+  border-color: var(--train);
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.field-hint-error {
+  color: var(--train);
+  font-weight: 600;
+}

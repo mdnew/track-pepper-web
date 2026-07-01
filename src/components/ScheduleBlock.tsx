@@ -9,6 +9,9 @@ interface Props {
   species?: PetSpecies
   completion?: Completion | null
   loading?: boolean
+  readOnly?: boolean
+  onEdit?: () => void
+  onDelete?: () => void
   onToggle: (completed: boolean) => void
 }
 
@@ -17,6 +20,9 @@ export function ScheduleBlock({
   species = 'dog',
   completion,
   loading,
+  readOnly = false,
+  onEdit,
+  onDelete,
   onToggle,
 }: Props) {
   const isNight = task.category === 'night'
@@ -65,7 +71,39 @@ export function ScheduleBlock({
         )}
       </div>
       <div className="schedule-check">
-        {loading ? (
+        {readOnly ? (
+          <div className="schedule-actions">
+            <button type="button" className="schedule-edit-btn" onClick={onEdit}>
+              Edit
+            </button>
+            {onDelete && (
+              <button
+                type="button"
+                className="schedule-delete-btn"
+                onClick={onDelete}
+                aria-label={`Delete ${task.title}`}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                </svg>
+              </button>
+            )}
+          </div>
+        ) : loading ? (
           <div className="mini-spinner" />
         ) : (
           <input

@@ -60,6 +60,16 @@
   color: var(--header);
 }
 
+.btn-outline-danger {
+  border-color: var(--train);
+  color: var(--train);
+}
+
+.btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .read-only-label {
   margin: 0;
   font-size: 12px;
@@ -106,9 +116,22 @@
 
 .pet-card-readonly {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pet-card-row {
+  display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+.pet-card-schedule {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .pet-summary {
@@ -124,7 +147,8 @@
 }
 
 .pet-remove-btn {
-  margin-top: 8px;
+  width: 100%;
+  margin-top: 12px;
 }
 
 .add-pet-button {
@@ -166,11 +190,10 @@
   font-size: 15px;
 }
 
-.pet-age {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--potty);
+.pet-dob-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 .pet-card-fields {
@@ -313,13 +336,106 @@
 }
 
 .you-badge {
-  margin-left: auto;
   font-size: 11px;
   font-weight: 700;
   color: var(--potty);
   background: var(--potty-bg);
   padding: 4px 8px;
   border-radius: 8px;
+}
+
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.member-edit-btn {
+  padding: 6px 10px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 8px;
+  background: white;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--header);
+  cursor: pointer;
+}
+
+.member-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgb(245 107 107 / 35%);
+  border-radius: 8px;
+  background: white;
+  color: var(--train);
+  cursor: pointer;
+}
+
+.member-delete-btn:hover:not(:disabled) {
+  background: var(--train-bg);
+}
+
+.member-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.member-edit-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.member-edit-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-edit-name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.member-role-fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.member-role-fieldset legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.member-role-options {
+  display: flex;
+  gap: 8px;
+}
+
+.member-role-options button {
+  padding: 8px 14px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--header);
+  cursor: pointer;
+}
+
+.member-role-options button.active {
+  background: rgb(201 168 124 / 20%);
+  border-color: var(--header);
 }
 
 .success-banner {
@@ -339,6 +455,211 @@
   border-radius: 12px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.role-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: rgb(201 168 124 / 20%);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.member-action {
+  margin-left: auto;
+}
+
+.guest-list .guest-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.guest-edit-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.guest-edit-form {
+  flex: 1;
+  margin-top: 0;
+}
+
+.guest-access {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.guest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.add-guest-button {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.guest-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.guest-form input {
+  padding: 12px 14px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.guest-date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.guest-days-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.guest-days-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.guest-days-options button {
+  padding: 8px 10px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 10px;
+  background: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.guest-days-options button.active {
+  border-color: var(--header);
+  background: #fffaf5;
+  color: var(--header);
+}
+
+.leave-household-btn,
+.leave-household-note {
+  margin-top: 24px;
+}
+
+.leave-household-btn {
+  width: 100%;
+}
+
+.pet-schedule-summary {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.pet-schedule-edit-link {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--header);
+  text-decoration: none;
+}
+
+.pet-schedule-edit-link:hover {
+  text-decoration: underline;
+}
+
+.schedule-editor-pet-line {
+  margin: -8px 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.schedule-editor-preview {
+  margin-bottom: 16px;
+}
+
+.schedule-editor-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.schedule-editor-item {
+  padding: 14px;
+  border: 1px solid rgb(201 168 124 / 35%);
+  border-radius: 14px;
+  background: #fffaf5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-editor-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.schedule-editor-item label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.schedule-editor-item input,
+.schedule-editor-item select {
+  padding: 12px 14px;
+  border: 1px solid rgb(201 168 124 / 40%);
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.schedule-editor-delete {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.schedule-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.schedule-editor-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.schedule-editor-back {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--header);
 }
 
 .btn-signout:hover {

@@ -72,6 +72,13 @@ export function formatPetSummaryWithPlan(
   return `${summary} · ${plan.emoji} ${formatPlanPhaseLabel(plan)}`
 }
 
+export function formatPetNamesLine(
+  pets: { name: string; species: 'dog' | 'cat' }[],
+): string | null {
+  if (pets.length === 0) return null
+  return pets.map((pet) => `${petSpeciesEmoji(pet.species)} ${pet.name}`).join(' · ')
+}
+
 export function formatPetsLine(
   pets: { name: string; dateOfBirth: Date; species: 'dog' | 'cat' }[],
 ): string | null {

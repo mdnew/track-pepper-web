@@ -9,10 +9,7 @@ export function ErrorBanner({ message }: { message: string }) {
 export function LoadingScreen() {
   return (
     <div className="loading-screen">
-      <span className="loading-emoji" aria-hidden>
-        🐶
-      </span>
-      <div className="spinner" />
+      <Logo variant="brand" />
     </div>
   )
 }

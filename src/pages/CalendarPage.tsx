@@ -1,82 +1,105 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-import { PetSelector } from '../components/PetSelector'
-import { AppHeader } from '../components/ui'
+import { HouseholdSelector } from '../components/HouseholdSelector'
+import { AppHeader, LoadingScreen } from '../components/ui'
 import { MonthCalendar } from '../components/MonthCalendar'
 import { useAuth } from '../context/AuthContext'
 import { petsService } from '../services/pets'
-import { scheduleService } from '../services/schedule'
-import type { Pet, SchedulePlan } from '../types'
+import {
+  getScheduleRevision,
+  scheduleService,
+  subscribeScheduleRevision,
+} from '../services/schedule'
+import type { Pet } from '../types'
 import { applySpeciesTheme, speciesTheme } from '../theme/speciesTheme'
-import { resolveSelectedPetId, readSelectedPetId, writeSelectedPetId } from '../utils/petSelection'
-import { resolvePlanForPet } from '../utils/schedulePlan'
+import { readSelectedPetId } from '../utils/petSelection'
+import { formatPetNamesLine } from '../utils/petAge'
 import './CalendarPage.css'
 
 export function CalendarPage() {
   const navigate = useNavigate()
-  const { profile } = useAuth()
+  const location = useLocation()
+  const {
+    activeHouseholdId,
+    memberships,
+    loading: authLoading,
+    setActiveHousehold,
+  } = useAuth()
   const [focusedMonth, setFocusedMonth] = useState(new Date())
-  const [pets, setPets] = useState<Pet[]>([])
-  const [selectedPetId, setSelectedPetId] = useState<string | null>(() =>
-    readSelectedPetId(),
-  )
-  const [taskCount, setTaskCount] = useState(0)
-  const [completionCounts, setCompletionCounts] = useState<Map<string, number>>(
-    new Map(),
-  )
-  const [plansByPetId, setPlansByPetId] = useState<
-    Record<string, SchedulePlan | null>
-  >({})
+  const [petsByHouseholdId, setPetsByHouseholdId] = useState<Record<string, Pet[]>>({})
+  const [completionCounts, setCompletionCounts] = useState<Map<string, number>>(new Map())
+  const [dayTotals, setDayTotals] = useState<Map<string, number>>(new Map())
   const [loading, setLoading] = useState(true)
+  const [scheduleRevision, setScheduleRevision] = useState(getScheduleRevision)
 
-  const selectedPet = pets.find((pet) => pet.id === selectedPetId) ?? null
-  const theme = speciesTheme(selectedPet?.species ?? 'dog')
+  const pets = activeHouseholdId ? petsByHouseholdId[activeHouseholdId] ?? [] : []
+  const showLoading = authLoading || loading
+  const petsLine = formatPetNamesLine(pets)
+  const theme = speciesTheme('dog')
 
   const loadData = useCallback(async () => {
-    if (!profile?.householdId) return
+    if (authLoading) return
+    if (!activeHouseholdId || memberships.length === 0) {
+      setLoading(false)
+      return
+    }
     setLoading(true)
     try {
-      const [nextPets, nextPlans] = await Promise.all([
-        petsService.getPets(),
-        scheduleService.getPlans(),
-      ])
-
-      const petId = resolveSelectedPetId(nextPets, selectedPetId)
-      if (petId) writeSelectedPetId(petId)
-      const pet = nextPets.find((item) => item.id === petId) ?? null
-      const schedule = pet
-        ? await scheduleService.getScheduleForPet(pet, nextPlans, new Date())
-        : { plan: null, tasks: [] }
-
-      const counts = petId
-        ? await scheduleService.getCompletionCountsForMonth(
-            profile.householdId,
-            petId,
-            focusedMonth,
-          )
-        : new Map<string, number>()
-
-      const nextPlansByPetId = Object.fromEntries(
-        nextPets.map((householdPet) => [
-          householdPet.id,
-          resolvePlanForPet(nextPlans, householdPet),
-        ]),
+      const petsEntries = await Promise.all(
+        memberships.map(async (membership) => {
+          const householdPets = await petsService.getPets(membership.household.id)
+          return [membership.household.id, householdPets] as const
+        }),
       )
-
-      setPets(nextPets)
-      setSelectedPetId(petId)
-      setTaskCount(schedule.tasks.length)
-      setCompletionCounts(counts)
-      setPlansByPetId(nextPlansByPetId)
+      const nextPetsByHousehold = Object.fromEntries(petsEntries)
+      setPetsByHouseholdId(nextPetsByHousehold)
     } finally {
       setLoading(false)
     }
-  }, [profile?.householdId, focusedMonth, selectedPetId])
+  }, [activeHouseholdId, memberships, authLoading])
+
+  useEffect(() => {
+    return subscribeScheduleRevision(() => {
+      setScheduleRevision(getScheduleRevision())
+    })
+  }, [])
 
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  const loadCompletionStatus = useCallback(async () => {
+    if (!activeHouseholdId || pets.length === 0) {
+      setCompletionCounts(new Map())
+      setDayTotals(new Map())
+      return
+    }
+    try {
+      const plans = await scheduleService.getPlans()
+      const { completions, totals } = await scheduleService.getAggregatedCountsForMonth(
+        activeHouseholdId,
+        pets,
+        plans,
+        focusedMonth,
+      )
+      setCompletionCounts(completions)
+      setDayTotals(totals)
+    } catch {
+      setCompletionCounts(new Map())
+      setDayTotals(new Map())
+    }
+  }, [activeHouseholdId, pets, focusedMonth, scheduleRevision])
+
+  useEffect(() => {
+    if (loading) return
+    loadCompletionStatus().catch(() => undefined)
+  }, [loading, loadCompletionStatus])
+
+  useEffect(() => {
+    if (location.pathname !== '/') return
+    loadCompletionStatus().catch(() => undefined)
+  }, [location.pathname, loadCompletionStatus])
 
   useEffect(() => {
     applySpeciesTheme(theme)
@@ -90,9 +113,24 @@ export function CalendarPage() {
     }
   }, [])
 
-  function handlePetSelect(petId: string) {
-    setSelectedPetId(petId)
-    writeSelectedPetId(petId)
+  async function handleHouseholdSelect(householdId: string) {
+    if (householdId === activeHouseholdId) return
+    await setActiveHousehold(householdId)
+  }
+
+  function handleDaySelect(day: Date) {
+    const y = day.getFullYear()
+    const m = String(day.getMonth() + 1).padStart(2, '0')
+    const d = String(day.getDate()).padStart(2, '0')
+    const storedPetId = activeHouseholdId
+      ? readSelectedPetId(activeHouseholdId)
+      : null
+    const query = storedPetId ? `?pet=${storedPetId}` : ''
+    navigate(`/day/${y}-${m}-${d}${query}`)
+  }
+
+  if (showLoading) {
+    return <LoadingScreen />
   }
 
   return (
@@ -100,37 +138,33 @@ export function CalendarPage() {
       <AppHeader onSettings={() => navigate('/settings')} />
 
       <main className="calendar-page fixed-page-scroll">
-        <PetSelector
-          pets={pets}
-          selectedPetId={selectedPetId ?? ''}
-          plansByPetId={plansByPetId}
-          onSelect={handlePetSelect}
+        <HouseholdSelector
+          memberships={memberships}
+          selectedHouseholdId={activeHouseholdId ?? ''}
+          petsByHouseholdId={petsByHouseholdId}
+          showPetNames={false}
+          onSelect={(id) => {
+            handleHouseholdSelect(id).catch(() => undefined)
+          }}
         />
 
         <div className="calendar-card">
-          {loading ? (
-            <div className="calendar-loading">
-              <div className="spinner" />
-            </div>
-          ) : pets.length === 0 ? (
+          {pets.length === 0 ? (
             <div className="calendar-empty">
               Add your first pet in Settings to unlock age-based dog and cat
               schedules.
             </div>
           ) : (
             <>
+              {petsLine && (
+                <p className="calendar-pets-subtitle">{petsLine}</p>
+              )}
               <MonthCalendar
                 focusedMonth={focusedMonth}
                 completionCounts={completionCounts}
-                totalTasks={taskCount}
+                dayTotals={dayTotals}
                 onMonthChange={(month) => setFocusedMonth(month)}
-                onDaySelect={(day) => {
-                  const y = day.getFullYear()
-                  const m = String(day.getMonth() + 1).padStart(2, '0')
-                  const d = String(day.getDate()).padStart(2, '0')
-                  const query = selectedPetId ? `?pet=${selectedPetId}` : ''
-                  navigate(`/day/${y}-${m}-${d}${query}`)
-                }}
+                onDaySelect={handleDaySelect}
               />
               <p className="calendar-hint">Tap a day to view and check off tasks</p>
             </>
